@@ -1,0 +1,18 @@
+[package]
+name = "bm1397-protocol"
+authors = ["Georges Palauqui <g.palauqui@gptechinno.com>"]
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+categories = ["embedded", "hardware-support", "no-std"]
+keywords = ["no-std", "embedded-hal-driver", "mining", "bitcoin"]
+description = "Rust protocol driver for the BM1397 Bitcoin Mining ASIC."
+repository = "https://github.com/GPTechinno/bm1397-protocol"
+
+[dependencies]
+byteorder = { version ="1.4.3", default-features = false }
+crc-any = { version = "2.4.3", default-features = false }
+defmt = { version = "0.3.4", optional = true }
+
+[features]
+defmt = ["dep:defmt"]
