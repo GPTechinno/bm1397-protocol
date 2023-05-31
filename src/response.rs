@@ -26,9 +26,9 @@ pub enum ResponseType {
 pub struct Response;
 
 impl Response {
-    /// Parse raw bytes from RO signal of BM13xx.
+    /// Parse raw bytes from RO signal of BM1397.
     ///
-    /// The packet must have a lenght of 9 bytes (BM139x style).
+    /// The packet must have a lenght of 9 bytes.
     ///
     /// This returns :
     /// - an `Err(Error::InvalidPreamble)` if it first 2 bytes are not [0xAA, 0x55].
@@ -41,7 +41,7 @@ impl Response {
     /// # Example
     ///
     /// ```
-    /// use bm13xx_protocol::{Error, Register, Response, ResponseType};
+    /// use bm1397_protocol::{Error, Register, Response, ResponseType};
     ///
     /// // Error::InvalidPreamble
     /// let resp = Response::parse(&[0x00,0x55,0x13,0x97,0x18,0x00,0x00,0x00,0x06]);

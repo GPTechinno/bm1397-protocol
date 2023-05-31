@@ -1,5 +1,5 @@
 #![no_std]
-//! BM13xx protocol driver.
+//! BM1397 protocol driver.
 
 mod crc;
 pub mod registers;
