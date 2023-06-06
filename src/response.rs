@@ -26,19 +26,20 @@ pub enum ResponseType {
 pub struct Response;
 
 impl Response {
+    /// # Parse Response
+    ///
     /// Parse raw bytes from RO signal of BM1397.
     ///
     /// The packet must have a lenght of 9 bytes.
     ///
-    /// This returns :
-    /// - an `Err(Error::InvalidPreamble)` if it first 2 bytes are not [0xAA, 0x55].
-    /// - an `Err(Error::InvalidCrc)` if the CRC5 is not valid.
-    /// - an `Ok(ResponseType::Reg(r))` with the `RegisterResponse`.
-    /// - an `Err(Error::UnknownRegister(u8))` with the register address if it
-    /// do not match a known `Register`.
-    /// - an `Ok(ResponseType::Job(j))` with the `JobResponse`.
+    /// ## Return
+    /// - `Err(Error::InvalidPreamble)` if it first 2 bytes are not `[0xAA, 0x55]`.
+    /// - `Err(Error::InvalidCrc)` if the CRC5 is not valid.
+    /// - `Ok(ResponseType::Reg(r))` with the `RegisterResponse`.
+    /// - `Err(Error::UnknownRegister(u8))` with the register address if it do not match a known `Register`.
+    /// - `Ok(ResponseType::Job(j))` with the `JobResponse`.
     ///
-    /// # Example
+    /// ## Example
     ///
     /// ```
     /// use bm1397_protocol::{Error, Register, Response, ResponseType};
@@ -99,7 +100,7 @@ impl Response {
         }
         if data[8] & 0x80 == 0x80 {
             return Ok(ResponseType::Job(JobResponse {
-                nonce: BigEndian::read_u32(&data[2..6]),
+                nonce: BigEndian::read_u32(&data[2..]),
                 midstate_id: data[6],
                 job_id: data[7],
             }));
@@ -107,7 +108,7 @@ impl Response {
         match Register::try_from(data[7]) {
             Err(e) => Err(Error::UnknownRegister(e)),
             Ok(r) => Ok(ResponseType::Reg(RegisterResponse {
-                value: BigEndian::read_u32(&data[2..6]),
+                value: BigEndian::read_u32(&data[2..]),
                 chip_addr: data[6],
                 register: r,
             })),
