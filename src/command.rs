@@ -1,5 +1,5 @@
+use crate::address::Register;
 use crate::crc::{crc16, crc5};
-use crate::registers::Register;
 use byteorder::{BigEndian, ByteOrder, LittleEndian};
 
 /// Some command can be send to All chip in the chain or to a specific one
@@ -8,9 +8,9 @@ pub enum Destination {
     Chip(u8),
 }
 
-pub struct Command;
-
 pub type Midstate = [u8; 32];
+
+pub struct Command;
 
 impl Command {
     const CMD_ALL_CHIP: u8 = 0x10;

@@ -1,5 +1,5 @@
+use crate::address::Register;
 use crate::crc::crc5;
-use crate::registers::Register;
 use crate::Error;
 use byteorder::{BigEndian, ByteOrder};
 
