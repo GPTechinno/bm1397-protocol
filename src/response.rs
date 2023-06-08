@@ -1,13 +1,12 @@
-use crate::address::Register;
 use crate::crc::crc5;
+use crate::register::{ChipAddress, ClockOrderControl0, ClockOrderControl1, Registers};
 use crate::Error;
 use byteorder::{BigEndian, ByteOrder};
 
 #[derive(Debug)]
 pub struct RegisterResponse {
-    pub value: u32,
     pub chip_addr: u8,
-    pub register: Register,
+    pub register: Registers,
 }
 
 #[derive(Debug)]
@@ -36,13 +35,15 @@ impl Response {
     /// - `Err(Error::InvalidPreamble)` if it first 2 bytes are not `[0xAA, 0x55]`.
     /// - `Err(Error::InvalidCrc)` if the CRC5 is not valid.
     /// - `Ok(ResponseType::Reg(r))` with the `RegisterResponse`.
-    /// - `Err(Error::UnknownRegister(u8))` with the register address if it do not match a known `Register`.
+    // - `Err(Error::UnknownRegister(u8))` with the register address if it do not match a known `Registers`.
     /// - `Ok(ResponseType::Job(j))` with the `JobResponse`.
     ///
     /// ## Example
     ///
     /// ```
-    /// use bm1397_protocol::{Error, Register, Response, ResponseType};
+    /// use bm1397_protocol::Error;
+    /// use bm1397_protocol::register::{Registers, ChipAddress};
+    /// use bm1397_protocol::response::{Response, ResponseType};
     ///
     /// // Error::InvalidPreamble
     /// let resp = Response::parse(&[0x00,0x55,0x13,0x97,0x18,0x00,0x00,0x00,0x06]);
@@ -62,14 +63,13 @@ impl Response {
     /// assert!(resp.is_err());
     /// assert_eq!(resp.unwrap_err(), Error::InvalidCrc);
     ///
-    /// // Register::ChipAddress == 0x13971800
+    /// // ChipAddress == 0x13971800
     /// let resp = Response::parse(&[0xAA,0x55,0x13,0x97,0x18,0x00,0x00,0x00,0x06]);
     /// assert!(resp.is_ok());
     /// match resp.unwrap() {
     ///     ResponseType::Reg(r) => {
-    ///         assert_eq!(r.value, 0x13971800);
     ///         assert_eq!(r.chip_addr, 0);
-    ///         assert_eq!(r.register, Register::ChipAddress);
+    ///         assert_eq!(r.register, Registers::ChipAddress(ChipAddress::default()));
     ///     },
     ///     _ => panic!(),
     /// };
@@ -105,13 +105,19 @@ impl Response {
                 job_id: data[7],
             }));
         }
-        match Register::try_from(data[7]) {
-            Err(e) => Err(Error::UnknownRegister(e)),
-            Ok(r) => Ok(ResponseType::Reg(RegisterResponse {
-                value: BigEndian::read_u32(&data[2..]),
-                chip_addr: data[6],
-                register: r,
-            })),
-        }
+        let reg_val = BigEndian::read_u32(&data[2..]);
+        Ok(ResponseType::Reg(RegisterResponse {
+            chip_addr: data[6],
+            register: match data[7] {
+                ChipAddress::ADDR => Registers::ChipAddress(ChipAddress::from(reg_val)),
+                ClockOrderControl0::ADDR => {
+                    Registers::ClockOrderControl0(ClockOrderControl0::from(reg_val))
+                }
+                ClockOrderControl1::ADDR => {
+                    Registers::ClockOrderControl1(ClockOrderControl1::from(reg_val))
+                }
+                addr => return Err(Error::UnknownRegister(addr)),
+            },
+        }))
     }
 }

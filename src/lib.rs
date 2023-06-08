@@ -1,14 +1,16 @@
 #![no_std]
 //! BM1397 protocol driver.
 
-pub mod address;
 pub mod command;
 mod crc;
+pub mod register;
 pub mod response;
+pub mod specifier;
 
-pub use address::{CoreRegister, Register};
-pub use command::{Command, Destination, Midstate};
-pub use response::{JobResponse, RegisterResponse, Response, ResponseType};
+// pub use command::{Command, Destination, Midstate};
+// pub use register::{ChipAddress, ClockOrderControl0, ClockOrderControl1, RegAddress, Registers};
+// pub use response::{JobResponse, RegisterResponse, Response, ResponseType};
+// pub use specifier::ClockSelect;
 
 #[derive(Debug, PartialEq)]
 pub enum Error {

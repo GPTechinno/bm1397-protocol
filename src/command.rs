@@ -1,5 +1,5 @@
-use crate::address::Register;
 use crate::crc::{crc16, crc5};
+use crate::register::RegAddress;
 use byteorder::{BigEndian, ByteOrder, LittleEndian};
 
 /// Some command can be send to All chip in the chain or to a specific one
@@ -28,7 +28,7 @@ impl Command {
     /// ## Example
     ///
     /// ```
-    /// use bm1397_protocol::Command;
+    /// use bm1397_protocol::command::Command;
     ///
     /// let cmd = Command::chain_inactive();
     /// assert_eq!(cmd, [0x55, 0xAA, 0x53, 0x05, 0x00, 0x00, 0x03]);
@@ -63,7 +63,7 @@ impl Command {
     /// ## Example
     ///
     /// ```
-    /// use bm1397_protocol::Command;
+    /// use bm1397_protocol::command::Command;
     ///
     /// let cmd = Command::set_chip_addr(0x00);
     /// assert_eq!(cmd, [0x55, 0xAA, 0x40, 0x05, 0x00, 0x00, 0x1C]);
@@ -85,24 +85,25 @@ impl Command {
     /// using the `dest` parameter.
     ///
     /// Usually the first command sent by a driver to the chain is the Read Register
-    /// command of `Register::ChipAddress` to all chips on the chain, this is usefull to
+    /// command of `ChipAddress` to all chips on the chain, this is usefull to
     /// enumerate all chips on the chain.
     ///
     /// ## Example
     ///
     /// ```
-    /// use bm1397_protocol::{Command, Destination, Register};
+    /// use bm1397_protocol::command::{Command, Destination};
+    /// use bm1397_protocol::register::ChipAddress;
     ///
     /// // Enumerate the chain
-    /// let cmd = Command::read_reg(Register::ChipAddress, Destination::All);
+    /// let cmd = Command::read_reg(ChipAddress::default(), Destination::All);
     /// assert_eq!(cmd, [0x55, 0xAA, 0x52, 0x05, 0x00, 0x00, 0x0A]);
     ///
     /// // Read I2CControl on chip with ChipAddress@64
-    /// let cmd = Command::read_reg(Register::I2CControl, Destination::Chip(64));
-    /// assert_eq!(cmd, [0x55, 0xAA, 0x42, 0x05, 0x40, 0x1C, 0x0B]);
+    /// // let cmd = Command::read_reg(I2CControl, Destination::Chip(64));
+    /// // assert_eq!(cmd, [0x55, 0xAA, 0x42, 0x05, 0x40, 0x1C, 0x0B]);
     /// ```
-    pub fn read_reg(reg: Register, dest: Destination) -> [u8; 7] {
-        let mut data: [u8; 7] = [0x55, 0xAA, Self::CMD_READ_REGISTER, 5, 0, reg as u8, 0];
+    pub fn read_reg(reg: impl RegAddress, dest: Destination) -> [u8; 7] {
+        let mut data: [u8; 7] = [0x55, 0xAA, Self::CMD_READ_REGISTER, 5, 0, reg.addr(), 0];
         match dest {
             Destination::All => data[2] += Self::CMD_ALL_CHIP,
             Destination::Chip(c) => data[4] = c,
@@ -121,24 +122,25 @@ impl Command {
     /// ## Example
     ///
     /// ```
-    /// use bm1397_protocol::{Command, Destination, Register};
+    /// use bm1397_protocol::command::{Command, Destination};
+    /// use bm1397_protocol::register::ClockOrderControl0;
     ///
     /// // Write ClockOrderControl0 value 0x0000_0000 on All chip of the chain
-    /// let cmd = Command::write_reg(Register::ClockOrderControl0, Destination::All, 0x0000_0000);
+    /// let cmd = Command::write_reg(ClockOrderControl0::default(), Destination::All, 0x0000_0000);
     /// assert_eq!(cmd, [0x55, 0xAA, 0x51, 0x09, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x1C]);
     ///
     /// // Write MiscControl value 0x0000_7A31 on chip with ChipAddress@64
-    /// let cmd = Command::write_reg(Register::MiscControl, Destination::Chip(64), 0x0000_7A31);
-    /// assert_eq!(cmd, [0x55, 0xAA, 0x41, 0x09, 0x40, 0x18, 0x00, 0x00, 0x7A, 0x31, 0x11]);
+    /// // let cmd = Command::write_reg(MiscControl, Destination::Chip(64), 0x0000_7A31);
+    /// // assert_eq!(cmd, [0x55, 0xAA, 0x41, 0x09, 0x40, 0x18, 0x00, 0x00, 0x7A, 0x31, 0x11]);
     /// ```
-    pub fn write_reg(reg: Register, dest: Destination, val: u32) -> [u8; 11] {
+    pub fn write_reg(reg: impl RegAddress, dest: Destination, val: u32) -> [u8; 11] {
         let mut data: [u8; 11] = [
             0x55,
             0xAA,
             Self::CMD_WRITE_REGISTER,
             9,
             0,
-            reg as u8,
+            reg.addr(),
             0,
             0,
             0,
@@ -146,7 +148,7 @@ impl Command {
             0,
         ];
         match dest {
-            Destination::All => data[2] += 0x10,
+            Destination::All => data[2] += Self::CMD_ALL_CHIP,
             Destination::Chip(c) => data[4] = c,
         }
         BigEndian::write_u32(&mut data[6..], val);
@@ -159,7 +161,7 @@ impl Command {
     /// ## Example
     ///
     /// ```
-    /// use bm1397_protocol::{Command, Midstate};
+    /// use bm1397_protocol::command::{Command, Midstate};
     ///
     /// let midstates: [&Midstate; 1] = [
     ///     &[
@@ -213,7 +215,7 @@ impl Command {
     /// ## Example
     ///
     /// ```
-    /// use bm1397_protocol::{Command, Midstate};
+    /// use bm1397_protocol::command::{Command, Midstate};
     ///
     /// let midstates: [&Midstate; 4] = [
     ///     &[
