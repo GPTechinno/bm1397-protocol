@@ -3,7 +3,7 @@
 use crate::specifier::{BaudrateClockSelect, ClockSelect};
 
 use fugit::HertzU32;
-pub trait RegAddrVal {
+pub trait Register {
     fn addr(&self) -> u8;
     fn val(&self) -> u32;
 }
@@ -28,7 +28,7 @@ macro_rules! impl_boilerplate_for {
             }
         }
 
-        impl RegAddrVal for $REG {
+        impl Register for $REG {
             fn addr(&self) -> u8 {
                 Self::ADDR
             }
@@ -52,7 +52,7 @@ impl ChipAddress {
     /// ### Example
     ///
     /// ```
-    /// use bm1397_protocol::register::{ChipAddress, RegAddrVal};
+    /// use bm1397_protocol::register::{ChipAddress, Register};
     ///
     /// assert_eq!(ChipAddress::ADDR, ChipAddress::DEFAULT.addr());
     /// ```
@@ -170,7 +170,7 @@ impl PLL0Parameter {
     /// ### Example
     ///
     /// ```
-    /// use bm1397_protocol::register::{PLL0Parameter, RegAddrVal};
+    /// use bm1397_protocol::register::{PLL0Parameter, Register};
     ///
     /// assert_eq!(PLL0Parameter::ADDR, PLL0Parameter::DEFAULT.addr());
     /// ```
@@ -453,7 +453,7 @@ impl MiscControl {
     /// ### Example
     ///
     /// ```
-    /// use bm1397_protocol::register::{MiscControl, RegAddrVal};
+    /// use bm1397_protocol::register::{MiscControl, Register};
     ///
     /// assert_eq!(MiscControl::ADDR, MiscControl::DEFAULT.addr());
     /// ```
@@ -658,7 +658,7 @@ impl FastUARTConfiguration {
     /// ### Example
     ///
     /// ```
-    /// use bm1397_protocol::register::{FastUARTConfiguration, RegAddrVal};
+    /// use bm1397_protocol::register::{FastUARTConfiguration, Register};
     ///
     /// assert_eq!(FastUARTConfiguration::ADDR, FastUARTConfiguration::DEFAULT.addr());
     /// ```
@@ -774,7 +774,7 @@ impl PLL1Parameter {
     /// ### Example
     ///
     /// ```
-    /// use bm1397_protocol::register::{PLL1Parameter, RegAddrVal};
+    /// use bm1397_protocol::register::{PLL1Parameter, Register};
     ///
     /// assert_eq!(PLL1Parameter::ADDR, PLL1Parameter::DEFAULT.addr());
     /// ```
@@ -1057,7 +1057,7 @@ impl PLL2Parameter {
     /// ### Example
     ///
     /// ```
-    /// use bm1397_protocol::register::{PLL2Parameter, RegAddrVal};
+    /// use bm1397_protocol::register::{PLL2Parameter, Register};
     ///
     /// assert_eq!(PLL2Parameter::ADDR, PLL2Parameter::DEFAULT.addr());
     /// ```
@@ -1340,7 +1340,7 @@ impl PLL3Parameter {
     /// ### Example
     ///
     /// ```
-    /// use bm1397_protocol::register::{PLL3Parameter, RegAddrVal};
+    /// use bm1397_protocol::register::{PLL3Parameter, Register};
     ///
     /// assert_eq!(PLL3Parameter::ADDR, PLL3Parameter::DEFAULT.addr());
     /// ```
@@ -1621,7 +1621,7 @@ impl ClockOrderControl0 {
     /// ### Example
     ///
     /// ```
-    /// use bm1397_protocol::register::{ClockOrderControl0, RegAddrVal};
+    /// use bm1397_protocol::register::{ClockOrderControl0, Register};
     ///
     /// assert_eq!(ClockOrderControl0::ADDR, ClockOrderControl0::DEFAULT.addr());
     /// ```
@@ -1733,7 +1733,7 @@ impl ClockOrderControl1 {
     /// ### Example
     ///
     /// ```
-    /// use bm1397_protocol::register::{ClockOrderControl1, RegAddrVal};
+    /// use bm1397_protocol::register::{ClockOrderControl1, Register};
     ///
     /// assert_eq!(ClockOrderControl1::ADDR, ClockOrderControl1::DEFAULT.addr());
     /// ```

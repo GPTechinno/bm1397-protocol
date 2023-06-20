@@ -1,5 +1,5 @@
 use crate::crc::{crc16, crc5};
-use crate::register::RegAddrVal;
+use crate::register::Register;
 use byteorder::{BigEndian, ByteOrder, LittleEndian};
 
 /// Some command can be send to All chip in the chain or to a specific one
@@ -102,7 +102,7 @@ impl Command {
     /// // let cmd = Command::read_reg(I2CControl, Destination::Chip(64));
     /// // assert_eq!(cmd, [0x55, 0xAA, 0x42, 0x05, 0x40, 0x1C, 0x0B]);
     /// ```
-    pub fn read_reg(reg: impl RegAddrVal, dest: Destination) -> [u8; 7] {
+    pub fn read_reg(reg: impl Register, dest: Destination) -> [u8; 7] {
         let mut data: [u8; 7] = [0x55, 0xAA, Self::CMD_READ_REGISTER, 5, 0, reg.addr(), 0];
         match dest {
             Destination::All => data[2] += Self::CMD_ALL_CHIP,
@@ -133,7 +133,7 @@ impl Command {
     /// let cmd = Command::write_reg(MiscControl::from(0x0000_7A31), Destination::Chip(64));
     /// assert_eq!(cmd, [0x55, 0xAA, 0x41, 0x09, 0x40, 0x18, 0x00, 0x00, 0x7A, 0x31, 0x11]);
     /// ```
-    pub fn write_reg(reg: impl RegAddrVal, dest: Destination) -> [u8; 11] {
+    pub fn write_reg(reg: impl Register, dest: Destination) -> [u8; 11] {
         let mut data: [u8; 11] = [
             0x55,
             0xAA,
