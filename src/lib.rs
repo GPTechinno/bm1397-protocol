@@ -8,7 +8,9 @@ pub mod response;
 pub mod specifier;
 
 // pub use command::{Command, Destination, Midstate};
-// pub use register::{ChipAddress, ClockOrderControl0, ClockOrderControl1, RegAddress, Registers};
+// pub use register::{
+//     ChipAddress, ClockOrderControl0, ClockOrderControl1, PLL0Parameter, RegAddress, Registers,
+// };
 // pub use response::{JobResponse, RegisterResponse, Response, ResponseType};
 // pub use specifier::ClockSelect;
 
