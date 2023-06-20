@@ -1,5 +1,5 @@
 use crate::crc::{crc16, crc5};
-use crate::register::RegAddress;
+use crate::register::RegAddrVal;
 use byteorder::{BigEndian, ByteOrder, LittleEndian};
 
 /// Some command can be send to All chip in the chain or to a specific one
@@ -102,7 +102,7 @@ impl Command {
     /// // let cmd = Command::read_reg(I2CControl, Destination::Chip(64));
     /// // assert_eq!(cmd, [0x55, 0xAA, 0x42, 0x05, 0x40, 0x1C, 0x0B]);
     /// ```
-    pub fn read_reg(reg: impl RegAddress, dest: Destination) -> [u8; 7] {
+    pub fn read_reg(reg: impl RegAddrVal, dest: Destination) -> [u8; 7] {
         let mut data: [u8; 7] = [0x55, 0xAA, Self::CMD_READ_REGISTER, 5, 0, reg.addr(), 0];
         match dest {
             Destination::All => data[2] += Self::CMD_ALL_CHIP,
@@ -126,14 +126,14 @@ impl Command {
     /// use bm1397_protocol::register::{ClockOrderControl0, MiscControl};
     ///
     /// // Write ClockOrderControl0 value 0x0000_0000 on All chip of the chain
-    /// let cmd = Command::write_reg(ClockOrderControl0::default(), Destination::All, 0x0000_0000);
+    /// let cmd = Command::write_reg(ClockOrderControl0::default(), Destination::All);
     /// assert_eq!(cmd, [0x55, 0xAA, 0x51, 0x09, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x1C]);
     ///
     /// // Write MiscControl value 0x0000_7A31 on chip with ChipAddress@64
-    /// let cmd = Command::write_reg(MiscControl::default(), Destination::Chip(64), 0x0000_7A31);
+    /// let cmd = Command::write_reg(MiscControl::from(0x0000_7A31), Destination::Chip(64));
     /// assert_eq!(cmd, [0x55, 0xAA, 0x41, 0x09, 0x40, 0x18, 0x00, 0x00, 0x7A, 0x31, 0x11]);
     /// ```
-    pub fn write_reg(reg: impl RegAddress, dest: Destination, val: u32) -> [u8; 11] {
+    pub fn write_reg(reg: impl RegAddrVal, dest: Destination) -> [u8; 11] {
         let mut data: [u8; 11] = [
             0x55,
             0xAA,
@@ -151,7 +151,7 @@ impl Command {
             Destination::All => data[2] += Self::CMD_ALL_CHIP,
             Destination::Chip(c) => data[4] = c,
         }
-        BigEndian::write_u32(&mut data[6..], val);
+        BigEndian::write_u32(&mut data[6..], reg.val());
         data[10] = crc5(&data[2..10]);
         data
     }

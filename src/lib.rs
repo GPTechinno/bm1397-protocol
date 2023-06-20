@@ -10,7 +10,7 @@ pub mod specifier;
 // pub use command::{Command, Destination, Midstate};
 // pub use register::{
 //     ChipAddress, ClockOrderControl0, ClockOrderControl1, FastUARTConfiguration, MiscControl,
-//     PLL0Parameter, PLL1Parameter, PLL2Parameter, PLL3Parameter, RegAddress, Registers,
+//     PLL0Parameter, PLL1Parameter, PLL2Parameter, PLL3Parameter, RegAddrVal, Registers,
 // };
 // pub use response::{JobResponse, RegisterResponse, Response, ResponseType};
 // pub use specifier::{BaudrateClockSelect, ClockSelect};
