@@ -123,15 +123,15 @@ impl Command {
     ///
     /// ```
     /// use bm1397_protocol::command::{Command, Destination};
-    /// use bm1397_protocol::register::ClockOrderControl0;
+    /// use bm1397_protocol::register::{ClockOrderControl0, MiscControl};
     ///
     /// // Write ClockOrderControl0 value 0x0000_0000 on All chip of the chain
     /// let cmd = Command::write_reg(ClockOrderControl0::default(), Destination::All, 0x0000_0000);
     /// assert_eq!(cmd, [0x55, 0xAA, 0x51, 0x09, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x1C]);
     ///
     /// // Write MiscControl value 0x0000_7A31 on chip with ChipAddress@64
-    /// // let cmd = Command::write_reg(MiscControl, Destination::Chip(64), 0x0000_7A31);
-    /// // assert_eq!(cmd, [0x55, 0xAA, 0x41, 0x09, 0x40, 0x18, 0x00, 0x00, 0x7A, 0x31, 0x11]);
+    /// let cmd = Command::write_reg(MiscControl::default(), Destination::Chip(64), 0x0000_7A31);
+    /// assert_eq!(cmd, [0x55, 0xAA, 0x41, 0x09, 0x40, 0x18, 0x00, 0x00, 0x7A, 0x31, 0x11]);
     /// ```
     pub fn write_reg(reg: impl RegAddress, dest: Destination, val: u32) -> [u8; 11] {
         let mut data: [u8; 11] = [
