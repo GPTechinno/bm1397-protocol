@@ -641,6 +641,122 @@ impl defmt::Format for MiscControl {
     }
 }
 
+/// # Fast UART Configuration register
+///
+/// Used to configure UART settings.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct FastUARTConfiguration(u32);
+impl_boilerplate_for!(FastUARTConfiguration);
+
+impl FastUARTConfiguration {
+    /// ## Fast UART Configuration register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{FastUARTConfiguration, RegAddress};
+    ///
+    /// assert_eq!(FastUARTConfiguration::ADDR, FastUARTConfiguration::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x28;
+
+    /// ## Fast UART Configuration register reset value.
+    pub const RESET: u32 = 0x0600_000F;
+
+    /// ### Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::FastUARTConfiguration;
+    ///
+    /// assert_eq!(FastUARTConfiguration::DEFAULT, FastUARTConfiguration::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `DIV4_ODDSET` field.
+    pub const DIV4_ODDSET_OFFSET: u8 = 30;
+    /// ## Bit offset for the `PLL3_DIV4` field.
+    pub const PLL3_DIV4_OFFSET: u8 = 24;
+    /// ## Bit offset for the `USRC_ODDSET` field.
+    pub const USRC_ODDSET_OFFSET: u8 = 22;
+    /// ## Bit offset for the `USRC_DIV` field.
+    pub const USRC_DIV_OFFSET: u8 = 16;
+    /// ## Bit offset for the `FORCE_CORE_EN` field.
+    pub const FORCE_CORE_EN_OFFSET: u8 = 15;
+    /// ## Bit offset for the `CLKO_SEL` field.
+    pub const CLKO_SEL_OFFSET: u8 = 14;
+    /// ## Bit offset for the `CLKO_ODDSET` field.
+    pub const CLKO_ODDSET_OFFSET: u8 = 12;
+    /// ## Bit offset for the `CLKO_DIV` field.
+    pub const CLKO_DIV_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `DIV4_ODDSET` field.
+    pub const DIV4_ODDSET_MASK: u32 = 0b11 << Self::DIV4_ODDSET_OFFSET;
+    /// ## Bit mask for the `PLL3_DIV4` field.
+    pub const PLL3_DIV4_MASK: u32 = 0b1111 << Self::PLL3_DIV4_OFFSET;
+    /// ## Bit mask for the `USRC_ODDSET` field.
+    pub const USRC_ODDSET_MASK: u32 = 0b11 << Self::USRC_ODDSET_OFFSET;
+    /// ## Bit mask for the `USRC_DIV` field.
+    pub const USRC_DIV_MASK: u32 = 0x3f << Self::USRC_DIV_OFFSET;
+    /// ## Bit mask for the `FORCE_CORE_EN` field.
+    pub const FORCE_CORE_EN_MASK: u32 = 0b1 << Self::FORCE_CORE_EN_OFFSET;
+    /// ## Bit mask for the `CLKO_SEL` field.
+    pub const CLKO_SEL_MASK: u32 = 0b1 << Self::CLKO_SEL_OFFSET;
+    /// ## Bit mask for the `CLKO_ODDSET` field.
+    pub const CLKO_ODDSET_MASK: u32 = 0b11 << Self::CLKO_ODDSET_OFFSET;
+    /// ## Bit mask for the `CLKO_DIV` field.
+    pub const CLKO_DIV_MASK: u32 = 0xff << Self::CLKO_DIV_OFFSET;
+
+    /// ## Get the PLL3_DIV4.
+    ///
+    /// This returns an `u8` with the PLL3_DIV4 value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::FastUARTConfiguration;
+    ///
+    /// let uart_conf: FastUARTConfiguration = FastUARTConfiguration::DEFAULT;
+    /// assert_eq!(uart_conf.pll3_div4(), 0x06);
+    /// let uart_conf: FastUARTConfiguration = uart_conf.set_pll3_div4(0x0A);
+    /// assert_eq!(uart_conf.pll3_div4(), 0x0A);
+    /// let uart_conf: FastUARTConfiguration = uart_conf.set_pll3_div4(0xF5);
+    /// assert_eq!(uart_conf.pll3_div4(), 0x05);
+    /// ```
+    pub const fn pll3_div4(&self) -> u8 {
+        ((self.0 & Self::PLL3_DIV4_MASK) >> Self::PLL3_DIV4_OFFSET) as u8
+    }
+    /// ## Set the PLL3_DIV4.
+    #[must_use = "set_pll3_div4 returns a modified FastUARTConfiguration"]
+    pub const fn set_pll3_div4(mut self, pll3_div4: u8) -> Self {
+        self.0 &= !Self::PLL3_DIV4_MASK;
+        self.0 |= ((pll3_div4 as u32) << Self::PLL3_DIV4_OFFSET) & Self::PLL3_DIV4_MASK;
+        self
+    }
+}
+
+impl ::core::fmt::Display for FastUARTConfiguration {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("FastUARTConfiguration")
+            .field("pll3_div4", &self.pll3_div4())
+            .finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for FastUARTConfiguration {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(
+            fmt,
+            "FastUARTConfiguration {{ pll3_div4: {} }}",
+            self.pll3_div4(),
+        );
+    }
+}
+
 /// # PLL1 Parameter register
 ///
 /// Used to set PLL1 frequency.
@@ -1720,6 +1836,7 @@ pub enum Registers {
     ChipAddress(ChipAddress),
     PLL0Parameter(PLL0Parameter),
     MiscControl(MiscControl),
+    FastUARTConfiguration(FastUARTConfiguration),
     PLL1Parameter(PLL1Parameter),
     PLL2Parameter(PLL2Parameter),
     PLL3Parameter(PLL3Parameter),
