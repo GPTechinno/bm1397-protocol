@@ -1,3 +1,34 @@
+/// Baudrate CLocK SELect.
+///
+/// This is used by [`MiscControl::bclk_sel`] and [`MiscControl::set_bclk_sel`] method.
+///
+/// [`MiscControl::bclk_sel`]: crate::register::MiscControl::bclk_sel
+/// [`MiscControl::set_bclk_sel`]: crate::register::MiscControl::set_bclk_sel
+#[derive(Copy, Clone, Eq, PartialEq, Debug, PartialOrd, Ord, Hash, Default)]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
+#[repr(u8)]
+pub enum BaudrateClockSelect {
+    /// Baudrate base clock is CLKI (external clock).
+    #[default]
+    Clki = 0,
+    /// Baudrate base clock is PLL3.
+    Pll3 = 1,
+}
+impl From<bool> for BaudrateClockSelect {
+    fn from(val: bool) -> BaudrateClockSelect {
+        if val {
+            BaudrateClockSelect::Clki
+        } else {
+            BaudrateClockSelect::Pll3
+        }
+    }
+}
+impl From<BaudrateClockSelect> for u8 {
+    fn from(val: BaudrateClockSelect) -> u8 {
+        val as u8
+    }
+}
+
 /// Clock Select.
 ///
 /// This is used by [`ClockOrderControl0::clock_select`], [`ClockOrderControl0::set_clock_select`],

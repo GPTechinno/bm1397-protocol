@@ -1,6 +1,6 @@
 //! BM1397 Registers structures.
 
-use crate::specifier::ClockSelect;
+use crate::specifier::{BaudrateClockSelect, ClockSelect};
 
 use fugit::HertzU32;
 pub trait RegAddress {
@@ -425,13 +425,218 @@ impl defmt::Format for PLL0Parameter {
     fn format(&self, fmt: defmt::Formatter) {
         defmt::write!(
             fmt,
-            "PLL0Parameter {{ locked: {}, enabled: {}, fbdiv: {}, refdiv: {}, postdiv1: {}, postdiv2: {}, frequency: {} }}",
+            "PLL0Parameter {{ locked: {}, enabled: {}, fbdiv: {}, refdiv: {}, postdiv1: {}, postdiv2: {} }}",
             self.locked(),
             self.enabled(),
             self.fbdiv(),
             self.refdiv(),
             self.postdiv1(),
             self.postdiv2(),
+        );
+    }
+}
+
+/// # Misc Control register
+///
+/// Used to control various settings.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct MiscControl(u32);
+impl_boilerplate_for!(MiscControl);
+
+impl MiscControl {
+    /// ## Misc Control register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{MiscControl, RegAddress};
+    ///
+    /// assert_eq!(MiscControl::ADDR, MiscControl::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x18;
+
+    /// ## Misc Control register reset value.
+    pub const RESET: u32 = 0x0000_3A01;
+
+    /// ### Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::MiscControl;
+    ///
+    /// assert_eq!(MiscControl::DEFAULT, MiscControl::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `BT8D_8_5` field.
+    pub const BT8D_8_5_OFFSET: u8 = 24;
+    /// ## Bit offset for the `CORE_SRST` field.
+    pub const CORE_SRST_OFFSET: u8 = 22;
+    /// ## Bit offset for the `SPAT_NOD` field.
+    pub const SPAT_NOD_OFFSET: u8 = 21;
+    /// ## Bit offset for the `RVS_K0` field.
+    pub const RVS_K0_OFFSET: u8 = 20;
+    /// ## Bit offset for the `DSCLK_SEL` field.
+    pub const DSCLK_SEL_OFFSET: u8 = 18;
+    /// ## Bit offset for the `TOP_CLK_SEL` field.
+    pub const TOP_CLK_SEL_OFFSET: u8 = 17;
+    /// ## Bit offset for the `BCK_SEL` field.
+    pub const BCK_SEL_OFFSET: u8 = 16;
+    /// ## Bit offset for the `RET_ERR_NONCE` field.
+    pub const RET_ERR_NONCE_OFFSET: u8 = 15;
+    /// ## Bit offset for the `RFS` field.
+    pub const RFS_OFFSET: u8 = 14;
+    /// ## Bit offset for the `INV_CLKO` field.
+    pub const INV_CLKO_OFFSET: u8 = 13;
+    /// ## Bit offset for the `BT8D_4_0` field.
+    pub const BT8D_4_0_OFFSET: u8 = 8;
+    /// ## Bit offset for the `RET_WORK_ERR_FLAG` field.
+    pub const RET_WORK_ERR_FLAG_OFFSET: u8 = 7;
+    /// ## Bit offset for the `TFS` field.
+    pub const TFS_OFFSET: u8 = 4;
+    /// ## Bit offset for the `HASHRATE_TWS` field.
+    pub const HASHRATE_TWS_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `BT8D_8_5` field.
+    pub const BT8D_8_5_MASK: u32 = 0b1111 << Self::BT8D_8_5_OFFSET;
+    /// ## Bit mask for the `CORE_SRST` field.
+    pub const CORE_SRST_MASK: u32 = 0b1 << Self::CORE_SRST_OFFSET;
+    /// ## Bit mask for the `SPAT_NOD` field.
+    pub const SPAT_NOD_MASK: u32 = 0b1 << Self::SPAT_NOD_OFFSET;
+    /// ## Bit mask for the `RVS_K0` field.
+    pub const RVS_K0_MASK: u32 = 0b1 << Self::RVS_K0_OFFSET;
+    /// ## Bit mask for the `DSCLK_SEL` field.
+    pub const DSCLK_SEL_MASK: u32 = 0b11 << Self::DSCLK_SEL_OFFSET;
+    /// ## Bit mask for the `TOP_CLK_SEL` field.
+    pub const TOP_CLK_SEL_MASK: u32 = 0b1 << Self::TOP_CLK_SEL_OFFSET;
+    /// ## Bit mask for the `BCK_SEL` field.
+    pub const BCK_SEL_MASK: u32 = 0b1 << Self::BCK_SEL_OFFSET;
+    /// ## Bit mask for the `RET_ERR_NONCE` field.
+    pub const RET_ERR_NONCE_MASK: u32 = 0b1 << Self::RET_ERR_NONCE_OFFSET;
+    /// ## Bit mask for the `RFS` field.
+    pub const RFS_MASK: u32 = 0b1 << Self::RFS_OFFSET;
+    /// ## Bit mask for the `INV_CLKO` field.
+    pub const INV_CLKO_MASK: u32 = 0b1 << Self::INV_CLKO_OFFSET;
+    /// ## Bit mask for the `BT8D_4_0` field.
+    pub const BT8D_4_0_MASK: u32 = 0b11111 << Self::BT8D_4_0_OFFSET;
+    /// ## Bit mask for the `RET_WORK_ERR_FLAG` field.
+    pub const RET_WORK_ERR_FLAG_MASK: u32 = 0b1 << Self::RET_WORK_ERR_FLAG_OFFSET;
+    /// ## Bit mask for the `TFS` field.
+    pub const TFS_MASK: u32 = 0xb111 << Self::TFS_OFFSET;
+    /// ## Bit mask for the `HASHRATE_TWS` field.
+    pub const HASHRATE_TWS_MASK: u32 = 0xb11 << Self::HASHRATE_TWS_OFFSET;
+
+    /// ## Get the BT8D.
+    ///
+    /// This returns an `u16` with the 9-bits BT8D value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::MiscControl;
+    ///
+    /// let misc: MiscControl = MiscControl::DEFAULT;
+    /// assert_eq!(misc.bt8d(), 0x001A);
+    /// let misc: MiscControl = misc.set_bt8d(0x1AA);
+    /// assert_eq!(misc.bt8d(), 0x01AA);
+    /// let misc: MiscControl = misc.set_bt8d(0xFF55);
+    /// assert_eq!(misc.bt8d(), 0x0155);
+    /// ```
+    pub const fn bt8d(&self) -> u16 {
+        ((((self.0 & Self::BT8D_8_5_MASK) >> Self::BT8D_8_5_OFFSET) as u16) << 5)
+            | (((self.0 & Self::BT8D_4_0_MASK) >> Self::BT8D_4_0_OFFSET) as u16)
+    }
+    /// ## Set the BT8D.
+    #[must_use = "set_bt8d returns a modified MiscControl"]
+    pub const fn set_bt8d(mut self, bt8d: u16) -> Self {
+        self.0 &= !Self::BT8D_8_5_MASK;
+        self.0 &= !Self::BT8D_4_0_MASK;
+        self.0 |= (((bt8d >> 5) as u32) << Self::BT8D_8_5_OFFSET) & Self::BT8D_8_5_MASK;
+        self.0 |= ((bt8d as u32) << Self::BT8D_4_0_OFFSET) & Self::BT8D_4_0_MASK;
+        self
+    }
+
+    /// ## Reset the Core.
+    ///
+    /// This returns an `bool` with the Core Reset state.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::MiscControl;
+    ///
+    /// let misc: MiscControl = MiscControl::DEFAULT;
+    /// assert!(!misc.core_srst());
+    /// let misc: MiscControl = misc.reset_core();
+    /// assert!(misc.core_srst());
+    /// ```
+    pub const fn core_srst(&self) -> bool {
+        self.0 & Self::CORE_SRST_MASK == Self::CORE_SRST_MASK
+    }
+    /// ## Reset the Core.
+    #[must_use = "reset_core returns a modified MiscControl"]
+    pub const fn reset_core(mut self) -> Self {
+        self.0 |= Self::CORE_SRST_MASK;
+        self
+    }
+
+    /// ## Get the Baudrate Clock Select.
+    ///
+    /// This returns an `BaudrateClockSelect` with the current Baudrate Clock Select.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::MiscControl;
+    /// use bm1397_protocol::specifier::BaudrateClockSelect;
+    ///
+    /// let misc: MiscControl = MiscControl::DEFAULT;
+    /// assert_eq!(misc.bclk_sel(), BaudrateClockSelect::Clki);
+    /// let misc: MiscControl = misc.set_bclk_sel(BaudrateClockSelect::Clki);
+    /// assert_eq!(misc.bclk_sel(), BaudrateClockSelect::Clki);
+    /// let misc: MiscControl = misc.set_bclk_sel(BaudrateClockSelect::Pll3);
+    /// assert_eq!(misc.bclk_sel(), BaudrateClockSelect::Pll3);
+    /// ```
+    pub const fn bclk_sel(&self) -> BaudrateClockSelect {
+        match self.0 & Self::BCK_SEL_MASK == Self::BCK_SEL_MASK {
+            true => BaudrateClockSelect::Pll3,
+            false => BaudrateClockSelect::Clki,
+        }
+    }
+    /// ## Set the Baudrate Clock Select.
+    #[must_use = "set_bclk_sel returns a modified MiscControl"]
+    pub const fn set_bclk_sel(mut self, bclk_sel: BaudrateClockSelect) -> Self {
+        self.0 &= !Self::BCK_SEL_MASK;
+        match bclk_sel {
+            BaudrateClockSelect::Pll3 => self.0 |= Self::BCK_SEL_MASK,
+            BaudrateClockSelect::Clki => self.0 &= !Self::BCK_SEL_MASK,
+        }
+        self
+    }
+}
+
+impl ::core::fmt::Display for MiscControl {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("MiscControl")
+            .field("bt8d", &self.bt8d())
+            .field("core_srst", &self.core_srst())
+            .field("bclk_sel", &self.bclk_sel())
+            .finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for MiscControl {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(
+            fmt,
+            "MiscControl {{ bt8d: {}, core_srst: {}, bclk_sel: {} }}",
+            self.bt8d(),
+            self.core_srst(),
+            self.bclk_sel(),
         );
     }
 }
@@ -708,7 +913,7 @@ impl defmt::Format for PLL1Parameter {
     fn format(&self, fmt: defmt::Formatter) {
         defmt::write!(
             fmt,
-            "PLL1Parameter {{ locked: {}, enabled: {}, fbdiv: {}, refdiv: {}, postdiv1: {}, postdiv2: {}, frequency: {} }}",
+            "PLL1Parameter {{ locked: {}, enabled: {}, fbdiv: {}, refdiv: {}, postdiv1: {}, postdiv2: {} }}",
             self.locked(),
             self.enabled(),
             self.fbdiv(),
@@ -991,7 +1196,7 @@ impl defmt::Format for PLL2Parameter {
     fn format(&self, fmt: defmt::Formatter) {
         defmt::write!(
             fmt,
-            "PLL2Parameter {{ locked: {}, enabled: {}, fbdiv: {}, refdiv: {}, postdiv1: {}, postdiv2: {}, frequency: {} }}",
+            "PLL2Parameter {{ locked: {}, enabled: {}, fbdiv: {}, refdiv: {}, postdiv1: {}, postdiv2: {} }}",
             self.locked(),
             self.enabled(),
             self.fbdiv(),
@@ -1274,7 +1479,7 @@ impl defmt::Format for PLL3Parameter {
     fn format(&self, fmt: defmt::Formatter) {
         defmt::write!(
             fmt,
-            "PLL3Parameter {{ locked: {}, enabled: {}, fbdiv: {}, refdiv: {}, postdiv1: {}, postdiv2: {}, frequency: {} }}",
+            "PLL3Parameter {{ locked: {}, enabled: {}, fbdiv: {}, refdiv: {}, postdiv1: {}, postdiv2: {} }}",
             self.locked(),
             self.enabled(),
             self.fbdiv(),
@@ -1514,6 +1719,7 @@ impl defmt::Format for ClockOrderControl1 {
 pub enum Registers {
     ChipAddress(ChipAddress),
     PLL0Parameter(PLL0Parameter),
+    MiscControl(MiscControl),
     PLL1Parameter(PLL1Parameter),
     PLL2Parameter(PLL2Parameter),
     PLL3Parameter(PLL3Parameter),
