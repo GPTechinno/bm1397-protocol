@@ -436,6 +436,855 @@ impl defmt::Format for PLL0Parameter {
     }
 }
 
+/// # PLL1 Parameter register
+///
+/// Used to set PLL1 frequency.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct PLL1Parameter(u32);
+impl_boilerplate_for!(PLL1Parameter);
+
+impl PLL1Parameter {
+    /// ## PLL1 Parameter register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{PLL1Parameter, RegAddress};
+    ///
+    /// assert_eq!(PLL1Parameter::ADDR, PLL1Parameter::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x60;
+
+    /// ## PLL1 Parameter register reset value.
+    pub const RESET: u32 = 0x0064_0111;
+
+    /// ### Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL1Parameter;
+    ///
+    /// assert_eq!(PLL1Parameter::DEFAULT, PLL1Parameter::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `LOCKED` field.
+    pub const LOCKED_OFFSET: u8 = 31;
+    /// ## Bit offset for the `PLLEN` field.
+    pub const PLLEN_OFFSET: u8 = 30;
+    /// ## Bit offset for the `FBDIV` field.
+    pub const FBDIV_OFFSET: u8 = 16;
+    /// ## Bit offset for the `REFDIV` field.
+    pub const REFDIV_OFFSET: u8 = 8;
+    /// ## Bit offset for the `POSTDIV1` field.
+    pub const POSTDIV1_OFFSET: u8 = 4;
+    /// ## Bit offset for the `POSTDIV2` field.
+    pub const POSTDIV2_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `LOCKED` field.
+    pub const LOCKED_MASK: u32 = 0x1 << Self::LOCKED_OFFSET;
+    /// ## Bit mask for the `PLLEN` field.
+    pub const PLLEN_MASK: u32 = 0x1 << Self::PLLEN_OFFSET;
+    /// ## Bit mask for the `FBDIV` field.
+    pub const FBDIV_MASK: u32 = 0xfff << Self::FBDIV_OFFSET;
+    /// ## Bit mask for the `REFDIV` field.
+    pub const REFDIV_MASK: u32 = 0x3f << Self::REFDIV_OFFSET;
+    /// ## Bit mask for the `POSTDIV1` field.
+    pub const POSTDIV1_MASK: u32 = 0x7 << Self::POSTDIV1_OFFSET;
+    /// ## Bit mask for the `POSTDIV2` field.
+    pub const POSTDIV2_MASK: u32 = 0x7 << Self::POSTDIV2_OFFSET;
+
+    /// ## Get the PLL1 locked state.
+    ///
+    /// This returns an `bool` with the locked state.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL1Parameter;
+    ///
+    /// let pll1: PLL1Parameter = PLL1Parameter::DEFAULT;
+    /// assert!(!pll1.locked());
+    /// let pll1: PLL1Parameter = pll1.lock();
+    /// assert!(pll1.locked());
+    /// let pll1: PLL1Parameter = pll1.unlock();
+    /// assert!(!pll1.locked());
+    /// ```
+    pub const fn locked(&self) -> bool {
+        self.0 & Self::LOCKED_MASK == Self::LOCKED_MASK
+    }
+    /// ## Lock the PLL1.
+    #[must_use = "lock returns a modified PLL1Parameter"]
+    pub const fn lock(mut self) -> Self {
+        self.0 |= Self::LOCKED_MASK;
+        self
+    }
+    /// ## Disable the PLL1.
+    #[must_use = "unlock returns a modified PLL1Parameter"]
+    pub const fn unlock(mut self) -> Self {
+        self.0 &= !Self::LOCKED_MASK;
+        self
+    }
+
+    /// ## Get the PLL1 enabled state.
+    ///
+    /// This returns an `bool` with the PLL1 enabled state.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL1Parameter;
+    ///
+    /// let pll1: PLL1Parameter = PLL1Parameter::DEFAULT;
+    /// assert!(!pll1.enabled());
+    /// let pll1: PLL1Parameter = pll1.enable();
+    /// assert!(pll1.enabled());
+    /// let pll1: PLL1Parameter = pll1.disable();
+    /// assert!(!pll1.enabled());
+    /// ```
+    pub const fn enabled(&self) -> bool {
+        self.0 & Self::PLLEN_MASK == Self::PLLEN_MASK
+    }
+    /// ## Enable the PLL1.
+    #[must_use = "enable returns a modified PLL1Parameter"]
+    pub const fn enable(mut self) -> Self {
+        self.0 |= Self::PLLEN_MASK;
+        self
+    }
+    /// ## Disable the PLL1.
+    #[must_use = "disable returns a modified PLL1Parameter"]
+    pub const fn disable(mut self) -> Self {
+        self.0 &= !Self::PLLEN_MASK;
+        self
+    }
+
+    /// ## Get the PLL1 FB Divider.
+    ///
+    /// This returns an `u16` with the PLL1 FB Divider.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL1Parameter;
+    ///
+    /// let pll1: PLL1Parameter = PLL1Parameter::DEFAULT;
+    /// assert_eq!(pll1.fbdiv(), 0x0064);
+    /// let pll1: PLL1Parameter = pll1.set_fbdiv(0xAAA);
+    /// assert_eq!(pll1.fbdiv(), 0x0AAA);
+    /// let pll1: PLL1Parameter = pll1.set_fbdiv(0xF555);
+    /// assert_eq!(pll1.fbdiv(), 0x0555);
+    /// ```
+    pub const fn fbdiv(&self) -> u16 {
+        ((self.0 & Self::FBDIV_MASK) >> Self::FBDIV_OFFSET) as u16
+    }
+    /// ## Set the PLL1 FB Divider.
+    #[must_use = "set_fbdiv returns a modified PLL1Parameter"]
+    pub const fn set_fbdiv(mut self, fbdiv: u16) -> Self {
+        self.0 &= !Self::FBDIV_MASK;
+        self.0 |= ((fbdiv as u32) << Self::FBDIV_OFFSET) & Self::FBDIV_MASK;
+        self
+    }
+
+    /// ## Get the PLL1 REF Divider.
+    ///
+    /// This returns an `u8` with the PLL1 REF Divider.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL1Parameter;
+    ///
+    /// let pll1: PLL1Parameter = PLL1Parameter::DEFAULT;
+    /// assert_eq!(pll1.refdiv(), 0x01);
+    /// let pll1: PLL1Parameter = pll1.set_refdiv(0xAA);
+    /// assert_eq!(pll1.refdiv(), 0x2A);
+    /// let pll1: PLL1Parameter = pll1.set_refdiv(0xF5);
+    /// assert_eq!(pll1.refdiv(), 0x35);
+    /// ```
+    pub const fn refdiv(&self) -> u8 {
+        ((self.0 & Self::REFDIV_MASK) >> Self::REFDIV_OFFSET) as u8
+    }
+    /// ## Set the PLL1 REF Divider.
+    #[must_use = "set_refdiv returns a modified PLL1Parameter"]
+    pub const fn set_refdiv(mut self, refdiv: u8) -> Self {
+        self.0 &= !Self::REFDIV_MASK;
+        self.0 |= ((refdiv as u32) << Self::REFDIV_OFFSET) & Self::REFDIV_MASK;
+        self
+    }
+
+    /// ## Get the PLL1 POST Divider 1.
+    ///
+    /// This returns an `u8` with the PLL1 POST Divider 1.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL1Parameter;
+    ///
+    /// let pll1: PLL1Parameter = PLL1Parameter::DEFAULT;
+    /// assert_eq!(pll1.postdiv1(), 0x01);
+    /// let pll1: PLL1Parameter = pll1.set_postdiv1(0x07);
+    /// assert_eq!(pll1.postdiv1(), 0x07);
+    /// let pll1: PLL1Parameter = pll1.set_postdiv1(0xF5);
+    /// assert_eq!(pll1.postdiv1(), 0x05);
+    /// ```
+    pub const fn postdiv1(&self) -> u8 {
+        ((self.0 & Self::POSTDIV1_MASK) >> Self::POSTDIV1_OFFSET) as u8
+    }
+    /// ## Set the PLL1 POST Divider 1.
+    #[must_use = "set_postdiv1 returns a modified PLL1Parameter"]
+    pub const fn set_postdiv1(mut self, postdiv1: u8) -> Self {
+        self.0 &= !Self::POSTDIV1_MASK;
+        self.0 |= ((postdiv1 as u32) << Self::POSTDIV1_OFFSET) & Self::POSTDIV1_MASK;
+        self
+    }
+
+    /// ## Get the PLL1 POST Divider 2.
+    ///
+    /// This returns an `u8` with the PLL1 POST Divider 2.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL1Parameter;
+    ///
+    /// let pll1: PLL1Parameter = PLL1Parameter::DEFAULT;
+    /// assert_eq!(pll1.postdiv2(), 0x01);
+    /// let pll1: PLL1Parameter = pll1.set_postdiv2(0x07);
+    /// assert_eq!(pll1.postdiv2(), 0x07);
+    /// let pll1: PLL1Parameter = pll1.set_postdiv2(0xF5);
+    /// assert_eq!(pll1.postdiv2(), 0x05);
+    /// ```
+    pub const fn postdiv2(&self) -> u8 {
+        ((self.0 & Self::POSTDIV2_MASK) >> Self::POSTDIV2_OFFSET) as u8
+    }
+    /// ## Set the PLL1 POST Divider 2.
+    #[must_use = "set_postdiv2 returns a modified PLL1Parameter"]
+    pub const fn set_postdiv2(mut self, postdiv2: u8) -> Self {
+        self.0 &= !Self::POSTDIV2_MASK;
+        self.0 |= ((postdiv2 as u32) << Self::POSTDIV2_OFFSET) & Self::POSTDIV2_MASK;
+        self
+    }
+
+    /// ## Get the PLL1 Frequency.
+    ///
+    /// This returns an `HertzU32` with the PLL1 Frequency according to the clki_freq parameter.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL1Parameter;
+    /// use fugit::HertzU32;
+    ///
+    /// let clki_freq = HertzU32::MHz(25);
+    /// assert_eq!(PLL1Parameter::DEFAULT.frequency(clki_freq), HertzU32::MHz(2500u32));
+    /// ```
+    pub const fn frequency(&self, clki_freq: HertzU32) -> HertzU32 {
+        HertzU32::from_raw(
+            clki_freq.raw() * (self.fbdiv() as u32)
+                / ((self.refdiv() as u32) * (self.postdiv1() as u32) * (self.postdiv2() as u32)),
+        )
+    }
+}
+
+impl ::core::fmt::Display for PLL1Parameter {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("PLL1Parameter")
+            .field("locked", &self.locked())
+            .field("enabled", &self.enabled())
+            .field("fbdiv", &self.fbdiv())
+            .field("refdiv", &self.refdiv())
+            .field("postdiv1", &self.postdiv1())
+            .field("postdiv2", &self.postdiv2())
+            .finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for PLL1Parameter {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(
+            fmt,
+            "PLL1Parameter {{ locked: {}, enabled: {}, fbdiv: {}, refdiv: {}, postdiv1: {}, postdiv2: {}, frequency: {} }}",
+            self.locked(),
+            self.enabled(),
+            self.fbdiv(),
+            self.refdiv(),
+            self.postdiv1(),
+            self.postdiv2(),
+        );
+    }
+}
+
+/// # PLL2 Parameter register
+///
+/// Used to set PLL2 frequency.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct PLL2Parameter(u32);
+impl_boilerplate_for!(PLL2Parameter);
+
+impl PLL2Parameter {
+    /// ## PLL2 Parameter register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{PLL2Parameter, RegAddress};
+    ///
+    /// assert_eq!(PLL2Parameter::ADDR, PLL2Parameter::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x64;
+
+    /// ## PLL2 Parameter register reset value.
+    pub const RESET: u32 = 0x0068_0111;
+
+    /// ### Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL2Parameter;
+    ///
+    /// assert_eq!(PLL2Parameter::DEFAULT, PLL2Parameter::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `LOCKED` field.
+    pub const LOCKED_OFFSET: u8 = 31;
+    /// ## Bit offset for the `PLLEN` field.
+    pub const PLLEN_OFFSET: u8 = 30;
+    /// ## Bit offset for the `FBDIV` field.
+    pub const FBDIV_OFFSET: u8 = 16;
+    /// ## Bit offset for the `REFDIV` field.
+    pub const REFDIV_OFFSET: u8 = 8;
+    /// ## Bit offset for the `POSTDIV1` field.
+    pub const POSTDIV1_OFFSET: u8 = 4;
+    /// ## Bit offset for the `POSTDIV2` field.
+    pub const POSTDIV2_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `LOCKED` field.
+    pub const LOCKED_MASK: u32 = 0x1 << Self::LOCKED_OFFSET;
+    /// ## Bit mask for the `PLLEN` field.
+    pub const PLLEN_MASK: u32 = 0x1 << Self::PLLEN_OFFSET;
+    /// ## Bit mask for the `FBDIV` field.
+    pub const FBDIV_MASK: u32 = 0xfff << Self::FBDIV_OFFSET;
+    /// ## Bit mask for the `REFDIV` field.
+    pub const REFDIV_MASK: u32 = 0x3f << Self::REFDIV_OFFSET;
+    /// ## Bit mask for the `POSTDIV1` field.
+    pub const POSTDIV1_MASK: u32 = 0x7 << Self::POSTDIV1_OFFSET;
+    /// ## Bit mask for the `POSTDIV2` field.
+    pub const POSTDIV2_MASK: u32 = 0x7 << Self::POSTDIV2_OFFSET;
+
+    /// ## Get the PLL2 locked state.
+    ///
+    /// This returns an `bool` with the locked state.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL2Parameter;
+    ///
+    /// let pll2: PLL2Parameter = PLL2Parameter::DEFAULT;
+    /// assert!(!pll2.locked());
+    /// let pll2: PLL2Parameter = pll2.lock();
+    /// assert!(pll2.locked());
+    /// let pll2: PLL2Parameter = pll2.unlock();
+    /// assert!(!pll2.locked());
+    /// ```
+    pub const fn locked(&self) -> bool {
+        self.0 & Self::LOCKED_MASK == Self::LOCKED_MASK
+    }
+    /// ## Lock the PLL2.
+    #[must_use = "lock returns a modified PLL2Parameter"]
+    pub const fn lock(mut self) -> Self {
+        self.0 |= Self::LOCKED_MASK;
+        self
+    }
+    /// ## Disable the PLL2.
+    #[must_use = "unlock returns a modified PLL2Parameter"]
+    pub const fn unlock(mut self) -> Self {
+        self.0 &= !Self::LOCKED_MASK;
+        self
+    }
+
+    /// ## Get the PLL2 enabled state.
+    ///
+    /// This returns an `bool` with the PLL2 enabled state.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL2Parameter;
+    ///
+    /// let pll2: PLL2Parameter = PLL2Parameter::DEFAULT;
+    /// assert!(!pll2.enabled());
+    /// let pll2: PLL2Parameter = pll2.enable();
+    /// assert!(pll2.enabled());
+    /// let pll2: PLL2Parameter = pll2.disable();
+    /// assert!(!pll2.enabled());
+    /// ```
+    pub const fn enabled(&self) -> bool {
+        self.0 & Self::PLLEN_MASK == Self::PLLEN_MASK
+    }
+    /// ## Enable the PLL2.
+    #[must_use = "enable returns a modified PLL2Parameter"]
+    pub const fn enable(mut self) -> Self {
+        self.0 |= Self::PLLEN_MASK;
+        self
+    }
+    /// ## Disable the PLL2.
+    #[must_use = "disable returns a modified PLL2Parameter"]
+    pub const fn disable(mut self) -> Self {
+        self.0 &= !Self::PLLEN_MASK;
+        self
+    }
+
+    /// ## Get the PLL2 FB Divider.
+    ///
+    /// This returns an `u16` with the PLL2 FB Divider.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL2Parameter;
+    ///
+    /// let pll2: PLL2Parameter = PLL2Parameter::DEFAULT;
+    /// assert_eq!(pll2.fbdiv(), 0x0068);
+    /// let pll2: PLL2Parameter = pll2.set_fbdiv(0xAAA);
+    /// assert_eq!(pll2.fbdiv(), 0x0AAA);
+    /// let pll2: PLL2Parameter = pll2.set_fbdiv(0xF555);
+    /// assert_eq!(pll2.fbdiv(), 0x0555);
+    /// ```
+    pub const fn fbdiv(&self) -> u16 {
+        ((self.0 & Self::FBDIV_MASK) >> Self::FBDIV_OFFSET) as u16
+    }
+    /// ## Set the PLL2 FB Divider.
+    #[must_use = "set_fbdiv returns a modified PLL2Parameter"]
+    pub const fn set_fbdiv(mut self, fbdiv: u16) -> Self {
+        self.0 &= !Self::FBDIV_MASK;
+        self.0 |= ((fbdiv as u32) << Self::FBDIV_OFFSET) & Self::FBDIV_MASK;
+        self
+    }
+
+    /// ## Get the PLL2 REF Divider.
+    ///
+    /// This returns an `u8` with the PLL2 REF Divider.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL2Parameter;
+    ///
+    /// let pll2: PLL2Parameter = PLL2Parameter::DEFAULT;
+    /// assert_eq!(pll2.refdiv(), 0x01);
+    /// let pll2: PLL2Parameter = pll2.set_refdiv(0xAA);
+    /// assert_eq!(pll2.refdiv(), 0x2A);
+    /// let pll2: PLL2Parameter = pll2.set_refdiv(0xF5);
+    /// assert_eq!(pll2.refdiv(), 0x35);
+    /// ```
+    pub const fn refdiv(&self) -> u8 {
+        ((self.0 & Self::REFDIV_MASK) >> Self::REFDIV_OFFSET) as u8
+    }
+    /// ## Set the PLL2 REF Divider.
+    #[must_use = "set_refdiv returns a modified PLL2Parameter"]
+    pub const fn set_refdiv(mut self, refdiv: u8) -> Self {
+        self.0 &= !Self::REFDIV_MASK;
+        self.0 |= ((refdiv as u32) << Self::REFDIV_OFFSET) & Self::REFDIV_MASK;
+        self
+    }
+
+    /// ## Get the PLL2 POST Divider 1.
+    ///
+    /// This returns an `u8` with the PLL2 POST Divider 1.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL2Parameter;
+    ///
+    /// let pll2: PLL2Parameter = PLL2Parameter::DEFAULT;
+    /// assert_eq!(pll2.postdiv1(), 0x01);
+    /// let pll2: PLL2Parameter = pll2.set_postdiv1(0x07);
+    /// assert_eq!(pll2.postdiv1(), 0x07);
+    /// let pll2: PLL2Parameter = pll2.set_postdiv1(0xF5);
+    /// assert_eq!(pll2.postdiv1(), 0x05);
+    /// ```
+    pub const fn postdiv1(&self) -> u8 {
+        ((self.0 & Self::POSTDIV1_MASK) >> Self::POSTDIV1_OFFSET) as u8
+    }
+    /// ## Set the PLL2 POST Divider 1.
+    #[must_use = "set_postdiv1 returns a modified PLL2Parameter"]
+    pub const fn set_postdiv1(mut self, postdiv1: u8) -> Self {
+        self.0 &= !Self::POSTDIV1_MASK;
+        self.0 |= ((postdiv1 as u32) << Self::POSTDIV1_OFFSET) & Self::POSTDIV1_MASK;
+        self
+    }
+
+    /// ## Get the PLL2 POST Divider 2.
+    ///
+    /// This returns an `u8` with the PLL2 POST Divider 2.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL2Parameter;
+    ///
+    /// let pll2: PLL2Parameter = PLL2Parameter::DEFAULT;
+    /// assert_eq!(pll2.postdiv2(), 0x01);
+    /// let pll2: PLL2Parameter = pll2.set_postdiv2(0x07);
+    /// assert_eq!(pll2.postdiv2(), 0x07);
+    /// let pll2: PLL2Parameter = pll2.set_postdiv2(0xF5);
+    /// assert_eq!(pll2.postdiv2(), 0x05);
+    /// ```
+    pub const fn postdiv2(&self) -> u8 {
+        ((self.0 & Self::POSTDIV2_MASK) >> Self::POSTDIV2_OFFSET) as u8
+    }
+    /// ## Set the PLL2 POST Divider 2.
+    #[must_use = "set_postdiv2 returns a modified PLL2Parameter"]
+    pub const fn set_postdiv2(mut self, postdiv2: u8) -> Self {
+        self.0 &= !Self::POSTDIV2_MASK;
+        self.0 |= ((postdiv2 as u32) << Self::POSTDIV2_OFFSET) & Self::POSTDIV2_MASK;
+        self
+    }
+
+    /// ## Get the PLL2 Frequency.
+    ///
+    /// This returns an `HertzU32` with the PLL2 Frequency according to the clki_freq parameter.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL2Parameter;
+    /// use fugit::HertzU32;
+    ///
+    /// let clki_freq = HertzU32::MHz(25);
+    /// assert_eq!(PLL2Parameter::DEFAULT.frequency(clki_freq), HertzU32::MHz(2600u32));
+    /// ```
+    pub const fn frequency(&self, clki_freq: HertzU32) -> HertzU32 {
+        HertzU32::from_raw(
+            clki_freq.raw() * (self.fbdiv() as u32)
+                / ((self.refdiv() as u32) * (self.postdiv1() as u32) * (self.postdiv2() as u32)),
+        )
+    }
+}
+
+impl ::core::fmt::Display for PLL2Parameter {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("PLL2Parameter")
+            .field("locked", &self.locked())
+            .field("enabled", &self.enabled())
+            .field("fbdiv", &self.fbdiv())
+            .field("refdiv", &self.refdiv())
+            .field("postdiv1", &self.postdiv1())
+            .field("postdiv2", &self.postdiv2())
+            .finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for PLL2Parameter {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(
+            fmt,
+            "PLL2Parameter {{ locked: {}, enabled: {}, fbdiv: {}, refdiv: {}, postdiv1: {}, postdiv2: {}, frequency: {} }}",
+            self.locked(),
+            self.enabled(),
+            self.fbdiv(),
+            self.refdiv(),
+            self.postdiv1(),
+            self.postdiv2(),
+        );
+    }
+}
+
+/// # PLL3 Parameter register
+///
+/// Used to set PLL3 frequency.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct PLL3Parameter(u32);
+impl_boilerplate_for!(PLL3Parameter);
+
+impl PLL3Parameter {
+    /// ## PLL3 Parameter register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{PLL3Parameter, RegAddress};
+    ///
+    /// assert_eq!(PLL3Parameter::ADDR, PLL3Parameter::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x68;
+
+    /// ## PLL3 Parameter register reset value.
+    pub const RESET: u32 = 0x0070_0111;
+
+    /// ### Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL3Parameter;
+    ///
+    /// assert_eq!(PLL3Parameter::DEFAULT, PLL3Parameter::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `LOCKED` field.
+    pub const LOCKED_OFFSET: u8 = 31;
+    /// ## Bit offset for the `PLLEN` field.
+    pub const PLLEN_OFFSET: u8 = 30;
+    /// ## Bit offset for the `FBDIV` field.
+    pub const FBDIV_OFFSET: u8 = 16;
+    /// ## Bit offset for the `REFDIV` field.
+    pub const REFDIV_OFFSET: u8 = 8;
+    /// ## Bit offset for the `POSTDIV1` field.
+    pub const POSTDIV1_OFFSET: u8 = 4;
+    /// ## Bit offset for the `POSTDIV2` field.
+    pub const POSTDIV2_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `LOCKED` field.
+    pub const LOCKED_MASK: u32 = 0x1 << Self::LOCKED_OFFSET;
+    /// ## Bit mask for the `PLLEN` field.
+    pub const PLLEN_MASK: u32 = 0x1 << Self::PLLEN_OFFSET;
+    /// ## Bit mask for the `FBDIV` field.
+    pub const FBDIV_MASK: u32 = 0xfff << Self::FBDIV_OFFSET;
+    /// ## Bit mask for the `REFDIV` field.
+    pub const REFDIV_MASK: u32 = 0x3f << Self::REFDIV_OFFSET;
+    /// ## Bit mask for the `POSTDIV1` field.
+    pub const POSTDIV1_MASK: u32 = 0x7 << Self::POSTDIV1_OFFSET;
+    /// ## Bit mask for the `POSTDIV2` field.
+    pub const POSTDIV2_MASK: u32 = 0x7 << Self::POSTDIV2_OFFSET;
+
+    /// ## Get the PLL3 locked state.
+    ///
+    /// This returns an `bool` with the locked state.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL3Parameter;
+    ///
+    /// let pll3: PLL3Parameter = PLL3Parameter::DEFAULT;
+    /// assert!(!pll3.locked());
+    /// let pll3: PLL3Parameter = pll3.lock();
+    /// assert!(pll3.locked());
+    /// let pll3: PLL3Parameter = pll3.unlock();
+    /// assert!(!pll3.locked());
+    /// ```
+    pub const fn locked(&self) -> bool {
+        self.0 & Self::LOCKED_MASK == Self::LOCKED_MASK
+    }
+    /// ## Lock the PLL3.
+    #[must_use = "lock returns a modified PLL3Parameter"]
+    pub const fn lock(mut self) -> Self {
+        self.0 |= Self::LOCKED_MASK;
+        self
+    }
+    /// ## Disable the PLL3.
+    #[must_use = "unlock returns a modified PLL3Parameter"]
+    pub const fn unlock(mut self) -> Self {
+        self.0 &= !Self::LOCKED_MASK;
+        self
+    }
+
+    /// ## Get the PLL3 enabled state.
+    ///
+    /// This returns an `bool` with the PLL3 enabled state.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL3Parameter;
+    ///
+    /// let pll3: PLL3Parameter = PLL3Parameter::DEFAULT;
+    /// assert!(!pll3.enabled());
+    /// let pll3: PLL3Parameter = pll3.enable();
+    /// assert!(pll3.enabled());
+    /// let pll3: PLL3Parameter = pll3.disable();
+    /// assert!(!pll3.enabled());
+    /// ```
+    pub const fn enabled(&self) -> bool {
+        self.0 & Self::PLLEN_MASK == Self::PLLEN_MASK
+    }
+    /// ## Enable the PLL3.
+    #[must_use = "enable returns a modified PLL3Parameter"]
+    pub const fn enable(mut self) -> Self {
+        self.0 |= Self::PLLEN_MASK;
+        self
+    }
+    /// ## Disable the PLL3.
+    #[must_use = "disable returns a modified PLL3Parameter"]
+    pub const fn disable(mut self) -> Self {
+        self.0 &= !Self::PLLEN_MASK;
+        self
+    }
+
+    /// ## Get the PLL3 FB Divider.
+    ///
+    /// This returns an `u16` with the PLL3 FB Divider.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL3Parameter;
+    ///
+    /// let pll3: PLL3Parameter = PLL3Parameter::DEFAULT;
+    /// assert_eq!(pll3.fbdiv(), 0x0070);
+    /// let pll3: PLL3Parameter = pll3.set_fbdiv(0xAAA);
+    /// assert_eq!(pll3.fbdiv(), 0x0AAA);
+    /// let pll3: PLL3Parameter = pll3.set_fbdiv(0xF555);
+    /// assert_eq!(pll3.fbdiv(), 0x0555);
+    /// ```
+    pub const fn fbdiv(&self) -> u16 {
+        ((self.0 & Self::FBDIV_MASK) >> Self::FBDIV_OFFSET) as u16
+    }
+    /// ## Set the PLL3 FB Divider.
+    #[must_use = "set_fbdiv returns a modified PLL3Parameter"]
+    pub const fn set_fbdiv(mut self, fbdiv: u16) -> Self {
+        self.0 &= !Self::FBDIV_MASK;
+        self.0 |= ((fbdiv as u32) << Self::FBDIV_OFFSET) & Self::FBDIV_MASK;
+        self
+    }
+
+    /// ## Get the PLL3 REF Divider.
+    ///
+    /// This returns an `u8` with the PLL3 REF Divider.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL3Parameter;
+    ///
+    /// let pll3: PLL3Parameter = PLL3Parameter::DEFAULT;
+    /// assert_eq!(pll3.refdiv(), 0x01);
+    /// let pll3: PLL3Parameter = pll3.set_refdiv(0xAA);
+    /// assert_eq!(pll3.refdiv(), 0x2A);
+    /// let pll3: PLL3Parameter = pll3.set_refdiv(0xF5);
+    /// assert_eq!(pll3.refdiv(), 0x35);
+    /// ```
+    pub const fn refdiv(&self) -> u8 {
+        ((self.0 & Self::REFDIV_MASK) >> Self::REFDIV_OFFSET) as u8
+    }
+    /// ## Set the PLL3 REF Divider.
+    #[must_use = "set_refdiv returns a modified PLL3Parameter"]
+    pub const fn set_refdiv(mut self, refdiv: u8) -> Self {
+        self.0 &= !Self::REFDIV_MASK;
+        self.0 |= ((refdiv as u32) << Self::REFDIV_OFFSET) & Self::REFDIV_MASK;
+        self
+    }
+
+    /// ## Get the PLL3 POST Divider 1.
+    ///
+    /// This returns an `u8` with the PLL3 POST Divider 1.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL3Parameter;
+    ///
+    /// let pll3: PLL3Parameter = PLL3Parameter::DEFAULT;
+    /// assert_eq!(pll3.postdiv1(), 0x01);
+    /// let pll3: PLL3Parameter = pll3.set_postdiv1(0x07);
+    /// assert_eq!(pll3.postdiv1(), 0x07);
+    /// let pll3: PLL3Parameter = pll3.set_postdiv1(0xF5);
+    /// assert_eq!(pll3.postdiv1(), 0x05);
+    /// ```
+    pub const fn postdiv1(&self) -> u8 {
+        ((self.0 & Self::POSTDIV1_MASK) >> Self::POSTDIV1_OFFSET) as u8
+    }
+    /// ## Set the PLL3 POST Divider 1.
+    #[must_use = "set_postdiv1 returns a modified PLL3Parameter"]
+    pub const fn set_postdiv1(mut self, postdiv1: u8) -> Self {
+        self.0 &= !Self::POSTDIV1_MASK;
+        self.0 |= ((postdiv1 as u32) << Self::POSTDIV1_OFFSET) & Self::POSTDIV1_MASK;
+        self
+    }
+
+    /// ## Get the PLL3 POST Divider 2.
+    ///
+    /// This returns an `u8` with the PLL3 POST Divider 2.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL3Parameter;
+    ///
+    /// let pll3: PLL3Parameter = PLL3Parameter::DEFAULT;
+    /// assert_eq!(pll3.postdiv2(), 0x01);
+    /// let pll3: PLL3Parameter = pll3.set_postdiv2(0x07);
+    /// assert_eq!(pll3.postdiv2(), 0x07);
+    /// let pll3: PLL3Parameter = pll3.set_postdiv2(0xF5);
+    /// assert_eq!(pll3.postdiv2(), 0x05);
+    /// ```
+    pub const fn postdiv2(&self) -> u8 {
+        ((self.0 & Self::POSTDIV2_MASK) >> Self::POSTDIV2_OFFSET) as u8
+    }
+    /// ## Set the PLL3 POST Divider 2.
+    #[must_use = "set_postdiv2 returns a modified PLL3Parameter"]
+    pub const fn set_postdiv2(mut self, postdiv2: u8) -> Self {
+        self.0 &= !Self::POSTDIV2_MASK;
+        self.0 |= ((postdiv2 as u32) << Self::POSTDIV2_OFFSET) & Self::POSTDIV2_MASK;
+        self
+    }
+
+    /// ## Get the PLL3 Frequency.
+    ///
+    /// This returns an `HertzU32` with the PLL3 Frequency according to the clki_freq parameter.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL3Parameter;
+    /// use fugit::HertzU32;
+    ///
+    /// let clki_freq = HertzU32::MHz(25);
+    /// assert_eq!(PLL3Parameter::DEFAULT.frequency(clki_freq), HertzU32::MHz(2800u32));
+    /// ```
+    pub const fn frequency(&self, clki_freq: HertzU32) -> HertzU32 {
+        HertzU32::from_raw(
+            clki_freq.raw() * (self.fbdiv() as u32)
+                / ((self.refdiv() as u32) * (self.postdiv1() as u32) * (self.postdiv2() as u32)),
+        )
+    }
+}
+
+impl ::core::fmt::Display for PLL3Parameter {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("PLL3Parameter")
+            .field("locked", &self.locked())
+            .field("enabled", &self.enabled())
+            .field("fbdiv", &self.fbdiv())
+            .field("refdiv", &self.refdiv())
+            .field("postdiv1", &self.postdiv1())
+            .field("postdiv2", &self.postdiv2())
+            .finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for PLL3Parameter {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(
+            fmt,
+            "PLL3Parameter {{ locked: {}, enabled: {}, fbdiv: {}, refdiv: {}, postdiv1: {}, postdiv2: {}, frequency: {} }}",
+            self.locked(),
+            self.enabled(),
+            self.fbdiv(),
+            self.refdiv(),
+            self.postdiv1(),
+            self.postdiv2(),
+        );
+    }
+}
+
 /// # Clock Order Control 0 register
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct ClockOrderControl0(u32);
@@ -665,6 +1514,9 @@ impl defmt::Format for ClockOrderControl1 {
 pub enum Registers {
     ChipAddress(ChipAddress),
     PLL0Parameter(PLL0Parameter),
+    PLL1Parameter(PLL1Parameter),
+    PLL2Parameter(PLL2Parameter),
+    PLL3Parameter(PLL3Parameter),
     ClockOrderControl0(ClockOrderControl0),
     ClockOrderControl1(ClockOrderControl1),
 }
