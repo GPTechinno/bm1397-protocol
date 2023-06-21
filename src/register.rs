@@ -157,6 +157,65 @@ impl defmt::Format for ChipAddress {
     }
 }
 
+/// # Hash Rate register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct HashRate(u32);
+impl_boilerplate_for!(HashRate);
+
+impl HashRate {
+    /// ## Hash Rate register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{HashRate, Register};
+    ///
+    /// assert_eq!(HashRate::ADDR, HashRate::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x04;
+
+    /// ## Hash Rate register reset value.
+    pub const RESET: u32 = 0x8000_0000;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::HashRate;
+    ///
+    /// assert_eq!(HashRate::DEFAULT, HashRate::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `LONG` field.
+    pub const LONG_OFFSET: u8 = 31;
+    /// ## Bit offset for the `HASHRATE` field.
+    pub const HASHRATE_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `LONG` field.
+    pub const LONG_MASK: u32 = 0b1 << Self::LONG_OFFSET;
+    /// ## Bit mask for the `HASHRATE` field.
+    pub const HASHRATE_MASK: u32 = 0x7fff_ffff << Self::HASHRATE_OFFSET;
+}
+
+impl ::core::fmt::Display for HashRate {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("HashRate").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for HashRate {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "HashRate {{  }}",);
+    }
+}
+
 /// # PLL0 Parameter register
 ///
 /// Used to set PLL0 frequency.
@@ -440,6 +499,187 @@ impl defmt::Format for PLL0Parameter {
     }
 }
 
+/// # Chip Nonce Offset register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct ChipNonceOffset(u32);
+impl_boilerplate_for!(ChipNonceOffset);
+
+impl ChipNonceOffset {
+    /// ## Chip Nonce Offset register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{ChipNonceOffset, Register};
+    ///
+    /// assert_eq!(ChipNonceOffset::ADDR, ChipNonceOffset::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x0C;
+
+    /// ## Chip Nonce Offset register reset value.
+    pub const RESET: u32 = 0x0000_0000;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::ChipNonceOffset;
+    ///
+    /// assert_eq!(ChipNonceOffset::DEFAULT, ChipNonceOffset::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `CNOV` field.
+    pub const CNOV_OFFSET: u8 = 31;
+    /// ## Bit offset for the `CNO` field.
+    pub const CNO_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `CNOV` field.
+    pub const CNOV_MASK: u32 = 0b1 << Self::CNOV_OFFSET;
+    /// ## Bit mask for the `CNO` field.
+    pub const CNO_MASK: u32 = 0b111 << Self::CNO_OFFSET;
+}
+
+impl ::core::fmt::Display for ChipNonceOffset {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("ChipNonceOffset").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for ChipNonceOffset {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "ChipNonceOffset {{  }}",);
+    }
+}
+
+/// # Hash Counting Number register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct HashCountingNumber(u32);
+impl_boilerplate_for!(HashCountingNumber);
+
+impl HashCountingNumber {
+    /// ## Hash Counting Number register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{HashCountingNumber, Register};
+    ///
+    /// assert_eq!(HashCountingNumber::ADDR, HashCountingNumber::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x10;
+
+    /// ## Hash Counting Number register reset value.
+    pub const RESET: u32 = 0x0000_0000;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::HashCountingNumber;
+    ///
+    /// assert_eq!(HashCountingNumber::DEFAULT, HashCountingNumber::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `HCN` field.
+    pub const HCN_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `HCN` field.
+    pub const HCN_MASK: u32 = 0xffff_ffff << Self::HCN_OFFSET;
+}
+
+impl ::core::fmt::Display for HashCountingNumber {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("HashCountingNumber").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for HashCountingNumber {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "HashCountingNumber {{  }}",);
+    }
+}
+
+/// # Ticket Mask register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct TicketMask(u32);
+impl_boilerplate_for!(TicketMask);
+
+impl TicketMask {
+    /// ## Ticket Mask register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{TicketMask, Register};
+    ///
+    /// assert_eq!(TicketMask::ADDR, TicketMask::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x14;
+
+    /// ## Ticket Mask register reset value.
+    pub const RESET: u32 = 0x0000_0000;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::TicketMask;
+    ///
+    /// assert_eq!(TicketMask::DEFAULT, TicketMask::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `TM3` field.
+    pub const TM3_OFFSET: u8 = 24;
+    /// ## Bit offset for the `TM2` field.
+    pub const TM2_OFFSET: u8 = 16;
+    /// ## Bit offset for the `TM1` field.
+    pub const TM1_OFFSET: u8 = 8;
+    /// ## Bit offset for the `TM0` field.
+    pub const TM0_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `TM3` field.
+    pub const TM3_MASK: u32 = 0xff << Self::TM3_OFFSET;
+    /// ## Bit mask for the `TM2` field.
+    pub const TM2_MASK: u32 = 0xff << Self::TM2_OFFSET;
+    /// ## Bit mask for the `TM1` field.
+    pub const TM1_MASK: u32 = 0xff << Self::TM1_OFFSET;
+    /// ## Bit mask for the `TM0` field.
+    pub const TM0_MASK: u32 = 0xff << Self::TM0_OFFSET;
+}
+
+impl ::core::fmt::Display for TicketMask {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("TicketMask").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for TicketMask {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "TicketMask {{  }}",);
+    }
+}
+
 /// # Misc Control register
 ///
 /// Used to control various settings.
@@ -645,6 +885,136 @@ impl defmt::Format for MiscControl {
     }
 }
 
+/// # I2C Control register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct I2CControl(u32);
+impl_boilerplate_for!(I2CControl);
+
+impl I2CControl {
+    /// ## I2C Control register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{I2CControl, Register};
+    ///
+    /// assert_eq!(I2CControl::ADDR, I2CControl::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x1C;
+
+    /// ## I2C Control register reset value.
+    pub const RESET: u32 = 0x0100_0000;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::I2CControl;
+    ///
+    /// assert_eq!(I2CControl::DEFAULT, I2CControl::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `BUSY` field.
+    pub const BUSY_OFFSET: u8 = 31;
+    /// ## Bit offset for the `DO_CMD` field.
+    pub const DO_CMD_OFFSET: u8 = 24;
+    /// ## Bit offset for the `I2C_ADDR` field.
+    pub const I2C_ADDR_OFFSET: u8 = 17;
+    /// ## Bit offset for the `RD_WR` field.
+    pub const RD_WR_OFFSET: u8 = 16;
+    /// ## Bit offset for the `I2C_REG_ADDR` field.
+    pub const I2C_REG_ADDR_OFFSET: u8 = 8;
+    /// ## Bit offset for the `I2C_REG_VAL` field.
+    pub const I2C_REG_VAL_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `BUSY` field.
+    pub const BUSY_MASK: u32 = 0b1 << Self::BUSY_OFFSET;
+    /// ## Bit mask for the `DO_CMD` field.
+    pub const DO_CMD_MASK: u32 = 0b1 << Self::DO_CMD_OFFSET;
+    /// ## Bit mask for the `I2C_ADDR` field.
+    pub const I2C_ADDR_MASK: u32 = 0x7f << Self::I2C_ADDR_OFFSET;
+    /// ## Bit mask for the `RD_WR` field.
+    pub const RD_WR_MASK: u32 = 0b1 << Self::RD_WR_OFFSET;
+    /// ## Bit mask for the `I2C_REG_ADDR` field.
+    pub const I2C_REG_ADDR_MASK: u32 = 0xff << Self::I2C_REG_ADDR_OFFSET;
+    /// ## Bit mask for the `I2C_REG_VAL` field.
+    pub const I2C_REG_VAL_MASK: u32 = 0xff << Self::I2C_REG_VAL_OFFSET;
+}
+
+impl ::core::fmt::Display for I2CControl {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("I2CControl").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for I2CControl {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "I2CControl {{  }}",);
+    }
+}
+
+/// # Ordered Clock Enable register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct OrderedClockEnable(u32);
+impl_boilerplate_for!(OrderedClockEnable);
+
+impl OrderedClockEnable {
+    /// ## Ordered Clock Enable register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{OrderedClockEnable, Register};
+    ///
+    /// assert_eq!(OrderedClockEnable::ADDR, OrderedClockEnable::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x20;
+
+    /// ## Ordered Clock Enable register reset value.
+    pub const RESET: u32 = 0x0000_ffff;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::OrderedClockEnable;
+    ///
+    /// assert_eq!(OrderedClockEnable::DEFAULT, OrderedClockEnable::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `CLKEN` field.
+    pub const CLKEN_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `CLKEN` field.
+    pub const CLKEN_MASK: u32 = 0xffff << Self::CLKEN_OFFSET;
+}
+
+impl ::core::fmt::Display for OrderedClockEnable {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("OrderedClockEnable").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for OrderedClockEnable {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "OrderedClockEnable {{  }}",);
+    }
+}
+
 /// # Fast UART Configuration register
 ///
 /// Used to configure UART settings.
@@ -758,6 +1128,687 @@ impl defmt::Format for FastUARTConfiguration {
             "FastUARTConfiguration {{ pll3_div4: {} }}",
             self.pll3_div4(),
         );
+    }
+}
+
+/// # UART Relay register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct UARTRelay(u32);
+impl_boilerplate_for!(UARTRelay);
+
+impl UARTRelay {
+    /// ## UART Relay register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{UARTRelay, Register};
+    ///
+    /// assert_eq!(UARTRelay::ADDR, UARTRelay::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x2C;
+
+    /// ## UART Relay register reset value.
+    pub const RESET: u32 = 0x000f_0000;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::UARTRelay;
+    ///
+    /// assert_eq!(UARTRelay::DEFAULT, UARTRelay::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `GAP_CNT` field.
+    pub const GAP_CNT_OFFSET: u8 = 16;
+    /// ## Bit offset for the `RO_REL_EN` field.
+    pub const RO_REL_EN_OFFSET: u8 = 1;
+    /// ## Bit offset for the `CO_REL_EN` field.
+    pub const CO_REL_EN_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `GAP_CNT` field.
+    pub const GAP_CNT_MASK: u32 = 0xffff << Self::GAP_CNT_OFFSET;
+    /// ## Bit mask for the `RO_REL_EN` field.
+    pub const RO_REL_EN_MASK: u32 = 0b1 << Self::RO_REL_EN_OFFSET;
+    /// ## Bit mask for the `CO_REL_EN` field.
+    pub const CO_REL_EN_MASK: u32 = 0b1 << Self::CO_REL_EN_OFFSET;
+}
+
+impl ::core::fmt::Display for UARTRelay {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("UARTRelay").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for UARTRelay {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "UARTRelay {{  }}",);
+    }
+}
+
+/// # Ticket Mask 2 register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct TicketMask2(u32);
+impl_boilerplate_for!(TicketMask2);
+
+impl TicketMask2 {
+    /// ## Ticket Mask 2 register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{TicketMask2, Register};
+    ///
+    /// assert_eq!(TicketMask2::ADDR, TicketMask2::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x38;
+
+    /// ## Ticket Mask 2 register reset value.
+    pub const RESET: u32 = 0x0000_0000;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::TicketMask2;
+    ///
+    /// assert_eq!(TicketMask2::DEFAULT, TicketMask2::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `TM` field.
+    pub const TM_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `TM` field.
+    pub const TM_MASK: u32 = 0xffff_ffff << Self::TM_OFFSET;
+}
+
+impl ::core::fmt::Display for TicketMask2 {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("TicketMask2").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for TicketMask2 {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "TicketMask2 {{  }}",);
+    }
+}
+
+/// # Core Register Control register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct CoreRegisterControl(u32);
+impl_boilerplate_for!(CoreRegisterControl);
+
+impl CoreRegisterControl {
+    /// ## Core Register Control register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{CoreRegisterControl, Register};
+    ///
+    /// assert_eq!(CoreRegisterControl::ADDR, CoreRegisterControl::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x3C;
+
+    /// ## Core Register Control register reset value.
+    pub const RESET: u32 = 0x0000_0000;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::CoreRegisterControl;
+    ///
+    /// assert_eq!(CoreRegisterControl::DEFAULT, CoreRegisterControl::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `CORE_ID` field.
+    pub const CORE_ID_OFFSET: u8 = 16;
+    /// ## Bit offset for the `CORE_REG_ID` field.
+    pub const CORE_REG_ID_OFFSET: u8 = 8;
+    /// ## Bit offset for the `CORE_REG_VAL` field.
+    pub const CORE_REG_VAL_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `CORE_ID` field.
+    pub const CORE_ID_MASK: u32 = 0xff << Self::CORE_ID_OFFSET;
+    /// ## Bit mask for the `CORE_REG_ID` field.
+    pub const CORE_REG_ID_MASK: u32 = 0b1111 << Self::CORE_REG_ID_OFFSET;
+    /// ## Bit mask for the `CORE_REG_VAL` field.
+    pub const CORE_REG_VAL_MASK: u32 = 0xff << Self::CORE_REG_VAL_OFFSET;
+}
+
+impl ::core::fmt::Display for CoreRegisterControl {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("CoreRegisterControl").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for CoreRegisterControl {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "CoreRegisterControl {{  }}",);
+    }
+}
+
+/// # Core Register Value register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct CoreRegisterValue(u32);
+impl_boilerplate_for!(CoreRegisterValue);
+
+impl CoreRegisterValue {
+    /// ## Core Register Value register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{CoreRegisterValue, Register};
+    ///
+    /// assert_eq!(CoreRegisterValue::ADDR, CoreRegisterValue::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x40;
+
+    /// ## Core Register Value register reset value.
+    pub const RESET: u32 = 0x0000_0000;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::CoreRegisterValue;
+    ///
+    /// assert_eq!(CoreRegisterValue::DEFAULT, CoreRegisterValue::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `CORE_ID` field.
+    pub const CORE_ID_OFFSET: u8 = 16;
+    /// ## Bit offset for the `CORE_REG_VAL` field.
+    pub const CORE_REG_VAL_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `CORE_ID` field.
+    pub const CORE_ID_MASK: u32 = 0xffff << Self::CORE_ID_OFFSET;
+    /// ## Bit mask for the `CORE_REG_VAL` field.
+    pub const CORE_REG_VAL_MASK: u32 = 0xffff << Self::CORE_REG_VAL_OFFSET;
+}
+
+impl ::core::fmt::Display for CoreRegisterValue {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("CoreRegisterValue").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for CoreRegisterValue {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "CoreRegisterValue {{  }}",);
+    }
+}
+
+/// # External Temperature Sensor Read register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct ExternalTemperatureSensorRead(u32);
+impl_boilerplate_for!(ExternalTemperatureSensorRead);
+
+impl ExternalTemperatureSensorRead {
+    /// ## External Temperature Sensor Read register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{ExternalTemperatureSensorRead, Register};
+    ///
+    /// assert_eq!(ExternalTemperatureSensorRead::ADDR, ExternalTemperatureSensorRead::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x44;
+
+    /// ## External Temperature Sensor Read register reset value.
+    pub const RESET: u32 = 0x0000_0100;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::ExternalTemperatureSensorRead;
+    ///
+    /// assert_eq!(ExternalTemperatureSensorRead::DEFAULT, ExternalTemperatureSensorRead::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `LOCAL_TEMP_ADDR` field.
+    pub const LOCAL_TEMP_ADDR_OFFSET: u8 = 24;
+    /// ## Bit offset for the `LOCAL_TEMP_DATA` field.
+    pub const LOCAL_TEMP_DATA_OFFSET: u8 = 16;
+    /// ## Bit offset for the `EXTERNAL_TEMP_ADDR` field.
+    pub const EXTERNAL_TEMP_ADDR_OFFSET: u8 = 8;
+    /// ## Bit offset for the `EXTERNAL_TEMP_DATA` field.
+    pub const EXTERNAL_TEMP_DATA_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `LOCAL_TEMP_ADDR` field.
+    pub const LOCAL_TEMP_ADDR_MASK: u32 = 0xff << Self::LOCAL_TEMP_ADDR_OFFSET;
+    /// ## Bit mask for the `LOCAL_TEMP_DATA` field.
+    pub const LOCAL_TEMP_DATA_MASK: u32 = 0xff << Self::LOCAL_TEMP_DATA_OFFSET;
+    /// ## Bit mask for the `EXTERNAL_TEMP_ADDR` field.
+    pub const EXTERNAL_TEMP_ADDR_MASK: u32 = 0xff << Self::EXTERNAL_TEMP_ADDR_OFFSET;
+    /// ## Bit mask for the `EXTERNAL_TEMP_DATA` field.
+    pub const EXTERNAL_TEMP_DATA_MASK: u32 = 0xff << Self::EXTERNAL_TEMP_DATA_OFFSET;
+}
+
+impl ::core::fmt::Display for ExternalTemperatureSensorRead {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("ExternalTemperatureSensorRead").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for ExternalTemperatureSensorRead {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "ExternalTemperatureSensorRead {{  }}",);
+    }
+}
+
+/// # Error Flag register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct ErrorFlag(u32);
+impl_boilerplate_for!(ErrorFlag);
+
+impl ErrorFlag {
+    /// ## Error Flag register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{ErrorFlag, Register};
+    ///
+    /// assert_eq!(ErrorFlag::ADDR, ErrorFlag::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x48;
+
+    /// ## Error Flag register reset value.
+    pub const RESET: u32 = 0xff00_0000;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::ErrorFlag;
+    ///
+    /// assert_eq!(ErrorFlag::DEFAULT, ErrorFlag::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `CMD_ERR_CNT` field.
+    pub const CMD_ERR_CNT_OFFSET: u8 = 24;
+    /// ## Bit offset for the `WORK_ERR_CNT` field.
+    pub const WORK_ERR_CNT_OFFSET: u8 = 16;
+    /// ## Bit offset for the `CORE_RESP_ERR` field.
+    pub const CORE_RESP_ERR_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `CMD_ERR_CNT` field.
+    pub const CMD_ERR_CNT_MASK: u32 = 0xff << Self::CMD_ERR_CNT_OFFSET;
+    /// ## Bit mask for the `WORK_ERR_CNT` field.
+    pub const WORK_ERR_CNT_MASK: u32 = 0xff << Self::WORK_ERR_CNT_OFFSET;
+    /// ## Bit mask for the `CORE_RESP_ERR` field.
+    pub const CORE_RESP_ERR_MASK: u32 = 0xff << Self::CORE_RESP_ERR_OFFSET;
+}
+
+impl ::core::fmt::Display for ErrorFlag {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("ErrorFlag").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for ErrorFlag {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "ErrorFlag {{  }}",);
+    }
+}
+
+/// # Nonce Error Counter register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct NonceErrorCounter(u32);
+impl_boilerplate_for!(NonceErrorCounter);
+
+impl NonceErrorCounter {
+    /// ## Nonce Error Counter register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{NonceErrorCounter, Register};
+    ///
+    /// assert_eq!(NonceErrorCounter::ADDR, NonceErrorCounter::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x4C;
+
+    /// ## Nonce Error Counter register reset value.
+    pub const RESET: u32 = 0x0000_0000;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::NonceErrorCounter;
+    ///
+    /// assert_eq!(NonceErrorCounter::DEFAULT, NonceErrorCounter::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `ERR_CNT` field.
+    pub const ERR_CNT_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `ERR_CNT` field.
+    pub const ERR_CNT_MASK: u32 = 0xffff_ffff << Self::ERR_CNT_OFFSET;
+}
+
+impl ::core::fmt::Display for NonceErrorCounter {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("NonceErrorCounter").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for NonceErrorCounter {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "NonceErrorCounter {{  }}",);
+    }
+}
+
+/// # Nonce Overflow Counter register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct NonceOverflowCounter(u32);
+impl_boilerplate_for!(NonceOverflowCounter);
+
+impl NonceOverflowCounter {
+    /// ## Nonce Overflow Counter register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{NonceOverflowCounter, Register};
+    ///
+    /// assert_eq!(NonceOverflowCounter::ADDR, NonceOverflowCounter::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x50;
+
+    /// ## Nonce Overflow Counter register reset value.
+    pub const RESET: u32 = 0x0000_0000;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::NonceOverflowCounter;
+    ///
+    /// assert_eq!(NonceOverflowCounter::DEFAULT, NonceOverflowCounter::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `OVRF_CNT` field.
+    pub const OVRF_CNT_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `OVRF_CNT` field.
+    pub const OVRF_CNT_MASK: u32 = 0xffff_ffff << Self::OVRF_CNT_OFFSET;
+}
+
+impl ::core::fmt::Display for NonceOverflowCounter {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("NonceOverflowCounter").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for NonceOverflowCounter {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "NonceOverflowCounter {{  }}",);
+    }
+}
+
+/// # Analog Mux Control register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct AnalogMuxControl(u32);
+impl_boilerplate_for!(AnalogMuxControl);
+
+impl AnalogMuxControl {
+    /// ## Analog Mux Control register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{AnalogMuxControl, Register};
+    ///
+    /// assert_eq!(AnalogMuxControl::ADDR, AnalogMuxControl::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x54;
+
+    /// ## Analog Mux Control register reset value.
+    pub const RESET: u32 = 0x0000_0000;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::AnalogMuxControl;
+    ///
+    /// assert_eq!(AnalogMuxControl::DEFAULT, AnalogMuxControl::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `DIODE_VDD_MUX_SEL` field.
+    pub const DIODE_VDD_MUX_SEL_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `DIODE_VDD_MUX_SEL` field.
+    pub const DIODE_VDD_MUX_SEL_MASK: u32 = 0b111 << Self::DIODE_VDD_MUX_SEL_OFFSET;
+}
+
+impl ::core::fmt::Display for AnalogMuxControl {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("AnalogMuxControl").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for AnalogMuxControl {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "AnalogMuxControl {{  }}",);
+    }
+}
+
+/// # Io Driver Strenght Configuration register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct IoDriverStrenghtConfiguration(u32);
+impl_boilerplate_for!(IoDriverStrenghtConfiguration);
+
+impl IoDriverStrenghtConfiguration {
+    /// ## Io Driver Strenght Configuration register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{IoDriverStrenghtConfiguration, Register};
+    ///
+    /// assert_eq!(IoDriverStrenghtConfiguration::ADDR, IoDriverStrenghtConfiguration::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x58;
+
+    /// ## Io Driver Strenght Configuration register reset value.
+    pub const RESET: u32 = 0x0211_2111;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::IoDriverStrenghtConfiguration;
+    ///
+    /// assert_eq!(IoDriverStrenghtConfiguration::DEFAULT, IoDriverStrenghtConfiguration::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `RF_DS` field.
+    pub const RF_DS_OFFSET: u8 = 24;
+    /// ## Bit offset for the `D3RS_EN` field.
+    pub const D3RS_EN_OFFSET: u8 = 23;
+    /// ## Bit offset for the `D2RS_EN` field.
+    pub const D2RS_EN_OFFSET: u8 = 22;
+    /// ## Bit offset for the `D1RS_EN` field.
+    pub const D1RS_EN_OFFSET: u8 = 21;
+    /// ## Bit offset for the `D0RS_EN` field.
+    pub const D0RS_EN_OFFSET: u8 = 20;
+    /// ## Bit offset for the `RO_DS` field.
+    pub const RO_DS_OFFSET: u8 = 16;
+    /// ## Bit offset for the `CLKO_DS` field.
+    pub const CLKO_DS_OFFSET: u8 = 12;
+    /// ## Bit offset for the `NRSTO_DS` field.
+    pub const NRSTO_DS_OFFSET: u8 = 8;
+    /// ## Bit offset for the `BO_DS` field.
+    pub const BO_DS_OFFSET: u8 = 4;
+    /// ## Bit offset for the `CO_DS` field.
+    pub const CO_DS_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `RF_DS` field.
+    pub const RF_DS_MASK: u32 = 0b1111 << Self::RF_DS_OFFSET;
+    /// ## Bit mask for the `D3RS_EN` field.
+    pub const D3RS_EN_MASK: u32 = 0b1 << Self::D3RS_EN_OFFSET;
+    /// ## Bit mask for the `D2RS_EN` field.
+    pub const D2RS_EN_MASK: u32 = 0b1 << Self::D2RS_EN_OFFSET;
+    /// ## Bit mask for the `D1RS_EN` field.
+    pub const D1RS_EN_MASK: u32 = 0b1 << Self::D1RS_EN_OFFSET;
+    /// ## Bit mask for the `D0RS_EN` field.
+    pub const D0RS_EN_MASK: u32 = 0b1 << Self::D0RS_EN_OFFSET;
+    /// ## Bit mask for the `RO_DS` field.
+    pub const RO_DS_MASK: u32 = 0b1111 << Self::RO_DS_OFFSET;
+    /// ## Bit mask for the `CLKO_DS` field.
+    pub const CLKO_DS_MASK: u32 = 0b1111 << Self::CLKO_DS_OFFSET;
+    /// ## Bit mask for the `NRSTO_DS` field.
+    pub const NRSTO_DS_MASK: u32 = 0b1111 << Self::NRSTO_DS_OFFSET;
+    /// ## Bit mask for the `BO_DS` field.
+    pub const BO_DS_MASK: u32 = 0b1111 << Self::BO_DS_OFFSET;
+    /// ## Bit mask for the `CO_DS` field.
+    pub const CO_DS_MASK: u32 = 0b1111 << Self::CO_DS_OFFSET;
+}
+
+impl ::core::fmt::Display for IoDriverStrenghtConfiguration {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("IoDriverStrenghtConfiguration").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for IoDriverStrenghtConfiguration {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "IoDriverStrenghtConfiguration {{  }}",);
+    }
+}
+
+/// # Time Out register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct TimeOut(u32);
+impl_boilerplate_for!(TimeOut);
+
+impl TimeOut {
+    /// ## Time Out register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{TimeOut, Register};
+    ///
+    /// assert_eq!(TimeOut::ADDR, TimeOut::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x5C;
+
+    /// ## Time Out register reset value.
+    pub const RESET: u32 = 0x0000_ffff;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::TimeOut;
+    ///
+    /// assert_eq!(TimeOut::DEFAULT, TimeOut::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `TMOUT` field.
+    pub const TMOUT_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `TMOUT` field.
+    pub const TMOUT_MASK: u32 = 0xffff << Self::TMOUT_OFFSET;
+}
+
+impl ::core::fmt::Display for TimeOut {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("TimeOut").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for TimeOut {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "TimeOut {{  }}",);
     }
 }
 
@@ -1610,6 +2661,337 @@ impl defmt::Format for PLL3Parameter {
     }
 }
 
+/// # Ordered Clock Monitor register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct OrderedClockMonitor(u32);
+impl_boilerplate_for!(OrderedClockMonitor);
+
+impl OrderedClockMonitor {
+    /// ## Ordered Clock Monitor register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{OrderedClockMonitor, Register};
+    ///
+    /// assert_eq!(OrderedClockMonitor::ADDR, OrderedClockMonitor::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x6C;
+
+    /// ## Ordered Clock Monitor register reset value.
+    pub const RESET: u32 = 0x0000_0000;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::OrderedClockMonitor;
+    ///
+    /// assert_eq!(OrderedClockMonitor::DEFAULT, OrderedClockMonitor::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `START` field.
+    pub const START_OFFSET: u8 = 31;
+    /// ## Bit offset for the `CLK_SEL` field.
+    pub const CLK_SEL_OFFSET: u8 = 24;
+    /// ## Bit offset for the `CLK_COUNT` field.
+    pub const CLK_COUNT_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `START` field.
+    pub const START_MASK: u32 = 0b1 << Self::START_OFFSET;
+    /// ## Bit mask for the `CLK_SEL` field.
+    pub const CLK_SEL_MASK: u32 = 0b1111 << Self::CLK_SEL_OFFSET;
+    /// ## Bit mask for the `CLK_COUNT` field.
+    pub const CLK_COUNT_MASK: u32 = 0xffff << Self::CLK_COUNT_OFFSET;
+}
+
+impl ::core::fmt::Display for OrderedClockMonitor {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("OrderedClockMonitor").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for OrderedClockMonitor {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "OrderedClockMonitor {{  }}",);
+    }
+}
+
+/// # PLL0 Divider register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct PLL0Divider(u32);
+impl_boilerplate_for!(PLL0Divider);
+
+impl PLL0Divider {
+    /// ## PLL0 Divider register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{PLL0Divider, Register};
+    ///
+    /// assert_eq!(PLL0Divider::ADDR, PLL0Divider::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x70;
+
+    /// ## PLL0 Divider register reset value.
+    pub const RESET: u32 = 0x0304_0607;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL0Divider;
+    ///
+    /// assert_eq!(PLL0Divider::DEFAULT, PLL0Divider::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `PLLDIV3` field.
+    pub const PLLDIV3_OFFSET: u8 = 24;
+    /// ## Bit offset for the `PLLDIV2` field.
+    pub const PLLDIV2_OFFSET: u8 = 16;
+    /// ## Bit offset for the `PLLDIV1` field.
+    pub const PLLDIV1_OFFSET: u8 = 8;
+    /// ## Bit offset for the `PLLDIV0` field.
+    pub const PLLDIV0_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `PLLDIV3` field.
+    pub const PLLDIV3_MASK: u32 = 0b1111 << Self::PLLDIV3_OFFSET;
+    /// ## Bit mask for the `PLLDIV2` field.
+    pub const PLLDIV2_MASK: u32 = 0b1111 << Self::PLLDIV2_OFFSET;
+    /// ## Bit mask for the `PLLDIV1` field.
+    pub const PLLDIV1_MASK: u32 = 0b1111 << Self::PLLDIV1_OFFSET;
+    /// ## Bit mask for the `PLLDIV0` field.
+    pub const PLLDIV0_MASK: u32 = 0b1111 << Self::PLLDIV0_OFFSET;
+}
+
+impl ::core::fmt::Display for PLL0Divider {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("PLL0Divider").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for PLL0Divider {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "PLL0Divider {{  }}",);
+    }
+}
+
+/// # PLL1 Divider register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct PLL1Divider(u32);
+impl_boilerplate_for!(PLL1Divider);
+
+impl PLL1Divider {
+    /// ## PLL1 Divider register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{PLL1Divider, Register};
+    ///
+    /// assert_eq!(PLL1Divider::ADDR, PLL1Divider::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x74;
+
+    /// ## PLL1 Divider register reset value.
+    pub const RESET: u32 = 0x0304_0506;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL1Divider;
+    ///
+    /// assert_eq!(PLL1Divider::DEFAULT, PLL1Divider::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `PLLDIV3` field.
+    pub const PLLDIV3_OFFSET: u8 = 24;
+    /// ## Bit offset for the `PLLDIV2` field.
+    pub const PLLDIV2_OFFSET: u8 = 16;
+    /// ## Bit offset for the `PLLDIV1` field.
+    pub const PLLDIV1_OFFSET: u8 = 8;
+    /// ## Bit offset for the `PLLDIV0` field.
+    pub const PLLDIV0_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `PLLDIV3` field.
+    pub const PLLDIV3_MASK: u32 = 0b1111 << Self::PLLDIV3_OFFSET;
+    /// ## Bit mask for the `PLLDIV2` field.
+    pub const PLLDIV2_MASK: u32 = 0b1111 << Self::PLLDIV2_OFFSET;
+    /// ## Bit mask for the `PLLDIV1` field.
+    pub const PLLDIV1_MASK: u32 = 0b1111 << Self::PLLDIV1_OFFSET;
+    /// ## Bit mask for the `PLLDIV0` field.
+    pub const PLLDIV0_MASK: u32 = 0b1111 << Self::PLLDIV0_OFFSET;
+}
+
+impl ::core::fmt::Display for PLL1Divider {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("PLL1Divider").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for PLL1Divider {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "PLL1Divider {{  }}",);
+    }
+}
+
+/// # PLL2 Divider register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct PLL2Divider(u32);
+impl_boilerplate_for!(PLL2Divider);
+
+impl PLL2Divider {
+    /// ## PLL2 Divider register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{PLL2Divider, Register};
+    ///
+    /// assert_eq!(PLL2Divider::ADDR, PLL2Divider::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x78;
+
+    /// ## PLL2 Divider register reset value.
+    pub const RESET: u32 = 0x0304_0506;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL2Divider;
+    ///
+    /// assert_eq!(PLL2Divider::DEFAULT, PLL2Divider::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `PLLDIV3` field.
+    pub const PLLDIV3_OFFSET: u8 = 24;
+    /// ## Bit offset for the `PLLDIV2` field.
+    pub const PLLDIV2_OFFSET: u8 = 16;
+    /// ## Bit offset for the `PLLDIV1` field.
+    pub const PLLDIV1_OFFSET: u8 = 8;
+    /// ## Bit offset for the `PLLDIV0` field.
+    pub const PLLDIV0_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `PLLDIV3` field.
+    pub const PLLDIV3_MASK: u32 = 0b1111 << Self::PLLDIV3_OFFSET;
+    /// ## Bit mask for the `PLLDIV2` field.
+    pub const PLLDIV2_MASK: u32 = 0b1111 << Self::PLLDIV2_OFFSET;
+    /// ## Bit mask for the `PLLDIV1` field.
+    pub const PLLDIV1_MASK: u32 = 0b1111 << Self::PLLDIV1_OFFSET;
+    /// ## Bit mask for the `PLLDIV0` field.
+    pub const PLLDIV0_MASK: u32 = 0b1111 << Self::PLLDIV0_OFFSET;
+}
+
+impl ::core::fmt::Display for PLL2Divider {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("PLL2Divider").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for PLL2Divider {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "PLL2Divider {{  }}",);
+    }
+}
+
+/// # PLL3 Divider register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct PLL3Divider(u32);
+impl_boilerplate_for!(PLL3Divider);
+
+impl PLL3Divider {
+    /// ## PLL3 Divider register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{PLL3Divider, Register};
+    ///
+    /// assert_eq!(PLL3Divider::ADDR, PLL3Divider::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x7C;
+
+    /// ## PLL3 Divider register reset value.
+    pub const RESET: u32 = 0x0304_0506;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::PLL3Divider;
+    ///
+    /// assert_eq!(PLL3Divider::DEFAULT, PLL3Divider::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `PLLDIV3` field.
+    pub const PLLDIV3_OFFSET: u8 = 24;
+    /// ## Bit offset for the `PLLDIV2` field.
+    pub const PLLDIV2_OFFSET: u8 = 16;
+    /// ## Bit offset for the `PLLDIV1` field.
+    pub const PLLDIV1_OFFSET: u8 = 8;
+    /// ## Bit offset for the `PLLDIV0` field.
+    pub const PLLDIV0_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `PLLDIV3` field.
+    pub const PLLDIV3_MASK: u32 = 0b1111 << Self::PLLDIV3_OFFSET;
+    /// ## Bit mask for the `PLLDIV2` field.
+    pub const PLLDIV2_MASK: u32 = 0b1111 << Self::PLLDIV2_OFFSET;
+    /// ## Bit mask for the `PLLDIV1` field.
+    pub const PLLDIV1_MASK: u32 = 0b1111 << Self::PLLDIV1_OFFSET;
+    /// ## Bit mask for the `PLLDIV0` field.
+    pub const PLLDIV0_MASK: u32 = 0b1111 << Self::PLLDIV0_OFFSET;
+}
+
+impl ::core::fmt::Display for PLL3Divider {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("PLL3Divider").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for PLL3Divider {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "PLL3Divider {{  }}",);
+    }
+}
+
 /// # Clock Order Control 0 register
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct ClockOrderControl0(u32);
@@ -1628,7 +3010,7 @@ impl ClockOrderControl0 {
     pub const ADDR: u8 = 0x80;
 
     /// ## Reset value of the socket mode register.
-    pub const RESET: u32 = 0x0000_0000;
+    pub const RESET: u32 = 0xD95C_8410;
 
     /// ### Default value.
     ///
@@ -1740,7 +3122,7 @@ impl ClockOrderControl1 {
     pub const ADDR: u8 = 0x84;
 
     /// ## Reset value of the socket mode register.
-    pub const RESET: u32 = 0x0000_0000;
+    pub const RESET: u32 = 0xFB73_EA62;
 
     /// ## Default value.
     ///
@@ -1772,7 +3154,7 @@ impl ClockOrderControl1 {
     /// use bm1397_protocol::{specifier::ClockSelect, register::ClockOrderControl1};
     ///
     /// let clk_ord_ctrl: ClockOrderControl1 = ClockOrderControl1::DEFAULT;
-    /// assert_eq!(clk_ord_ctrl.clock_select(0), Ok(ClockSelect::Default));
+    /// assert_eq!(clk_ord_ctrl.clock_select(0), ClockSelect::from_raw(0x2));
     /// ```
     pub const fn clock_select(&self, clock: u8) -> Result<ClockSelect, u8> {
         if clock > 7 {
@@ -1835,15 +3217,385 @@ impl defmt::Format for ClockOrderControl1 {
     }
 }
 
+/// # Clock Order Status register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct ClockOrderStatus(u32);
+impl_boilerplate_for!(ClockOrderStatus);
+
+impl ClockOrderStatus {
+    /// ## Clock Order Status register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{ClockOrderStatus, Register};
+    ///
+    /// assert_eq!(ClockOrderStatus::ADDR, ClockOrderStatus::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x8C;
+
+    /// ## Clock Order Status register reset value.
+    pub const RESET: u32 = 0x0000_0000;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::ClockOrderStatus;
+    ///
+    /// assert_eq!(ClockOrderStatus::DEFAULT, ClockOrderStatus::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `CLOK_ORDER_STATUS` field.
+    pub const CLOK_ORDER_STATUS_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `CLOK_ORDER_STATUS` field.
+    pub const CLOK_ORDER_STATUS_MASK: u32 = 0xffff_ffff << Self::CLOK_ORDER_STATUS_OFFSET;
+}
+
+impl ::core::fmt::Display for ClockOrderStatus {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("ClockOrderStatus").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for ClockOrderStatus {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "ClockOrderStatus {{  }}",);
+    }
+}
+
+/// # Frequency Sweep Control 1 register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct FrequencySweepControl1(u32);
+impl_boilerplate_for!(FrequencySweepControl1);
+
+impl FrequencySweepControl1 {
+    /// ## Frequency Sweep Control 1 register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{FrequencySweepControl1, Register};
+    ///
+    /// assert_eq!(FrequencySweepControl1::ADDR, FrequencySweepControl1::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x90;
+
+    /// ## Frequency Sweep Control 1 register reset value.
+    pub const RESET: u32 = 0x0000_0070;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::FrequencySweepControl1;
+    ///
+    /// assert_eq!(FrequencySweepControl1::DEFAULT, FrequencySweepControl1::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `SWEEP_STATE` field.
+    pub const SWEEP_STATE_OFFSET: u8 = 24;
+
+    /// ## Bit mask for the `SWEEP_STATE` field.
+    pub const SWEEP_STATE_MASK: u32 = 0b111 << Self::SWEEP_STATE_OFFSET;
+}
+
+impl ::core::fmt::Display for FrequencySweepControl1 {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("FrequencySweepControl1").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for FrequencySweepControl1 {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "FrequencySweepControl1 {{  }}",);
+    }
+}
+
+/// # Golden Nonce For Sweep Return register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct GoldenNonceForSweepReturn(u32);
+impl_boilerplate_for!(GoldenNonceForSweepReturn);
+
+impl GoldenNonceForSweepReturn {
+    /// ## Golden Nonce For Sweep Return register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{GoldenNonceForSweepReturn, Register};
+    ///
+    /// assert_eq!(GoldenNonceForSweepReturn::ADDR, GoldenNonceForSweepReturn::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x94;
+
+    /// ## Golden Nonce For Sweep Return register reset value.
+    pub const RESET: u32 = 0x0037_6400;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::GoldenNonceForSweepReturn;
+    ///
+    /// assert_eq!(GoldenNonceForSweepReturn::DEFAULT, GoldenNonceForSweepReturn::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `GNOSWR` field.
+    pub const GNOSWR_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `GNOSWR` field.
+    pub const GNOSWR_MASK: u32 = 0xffff_ffff << Self::GNOSWR_OFFSET;
+}
+
+impl ::core::fmt::Display for GoldenNonceForSweepReturn {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("GoldenNonceForSweepReturn").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for GoldenNonceForSweepReturn {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "GoldenNonceForSweepReturn {{  }}",);
+    }
+}
+
+/// # Returned Group Pattern Status register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct ReturnedGroupPatternStatus(u32);
+impl_boilerplate_for!(ReturnedGroupPatternStatus);
+
+impl ReturnedGroupPatternStatus {
+    /// ## Returned Group Pattern Status register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{ReturnedGroupPatternStatus, Register};
+    ///
+    /// assert_eq!(ReturnedGroupPatternStatus::ADDR, ReturnedGroupPatternStatus::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x98;
+
+    /// ## Returned Group Pattern Status register reset value.
+    pub const RESET: u32 = 0x3030_3030;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::ReturnedGroupPatternStatus;
+    ///
+    /// assert_eq!(ReturnedGroupPatternStatus::DEFAULT, ReturnedGroupPatternStatus::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `RGPS3` field.
+    pub const RGPS3_OFFSET: u8 = 24;
+    /// ## Bit offset for the `RGPS2` field.
+    pub const RGPS2_OFFSET: u8 = 16;
+    /// ## Bit offset for the `RGPS1` field.
+    pub const RGPS1_OFFSET: u8 = 8;
+    /// ## Bit offset for the `RGPS0` field.
+    pub const RGPS0_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `RGPS3` field.
+    pub const RGPS3_MASK: u32 = 0b1111 << Self::RGPS3_OFFSET;
+    /// ## Bit mask for the `RGPS2` field.
+    pub const RGPS2_MASK: u32 = 0b1111 << Self::RGPS2_OFFSET;
+    /// ## Bit mask for the `RGPS1` field.
+    pub const RGPS1_MASK: u32 = 0b1111 << Self::RGPS1_OFFSET;
+    /// ## Bit mask for the `RGPS0` field.
+    pub const RGPS0_MASK: u32 = 0b1111 << Self::RGPS0_OFFSET;
+}
+
+impl ::core::fmt::Display for ReturnedGroupPatternStatus {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("ReturnedGroupPatternStatus").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for ReturnedGroupPatternStatus {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "ReturnedGroupPatternStatus {{  }}",);
+    }
+}
+
+/// # Nonce Returned Timeout register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct NonceReturnedTimeout(u32);
+impl_boilerplate_for!(NonceReturnedTimeout);
+
+impl NonceReturnedTimeout {
+    /// ## Nonce Returned Timeout register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{NonceReturnedTimeout, Register};
+    ///
+    /// assert_eq!(NonceReturnedTimeout::ADDR, NonceReturnedTimeout::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0x9C;
+
+    /// ## Nonce Returned Timeout register reset value.
+    pub const RESET: u32 = 0x0000_ffff;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::NonceReturnedTimeout;
+    ///
+    /// assert_eq!(NonceReturnedTimeout::DEFAULT, NonceReturnedTimeout::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `SWEEP_TIMEOUT` field.
+    pub const SWEEP_TIMEOUT_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `SWEEP_TIMEOUT` field.
+    pub const SWEEP_TIMEOUT_MASK: u32 = 0xffff << Self::SWEEP_TIMEOUT_OFFSET;
+}
+
+impl ::core::fmt::Display for NonceReturnedTimeout {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("NonceReturnedTimeout").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for NonceReturnedTimeout {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "NonceReturnedTimeout {{  }}",);
+    }
+}
+
+/// # Returned Single Pattern Status register
+///
+/// Used to identify chip.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub struct ReturnedSinglePatternStatus(u32);
+impl_boilerplate_for!(ReturnedSinglePatternStatus);
+
+impl ReturnedSinglePatternStatus {
+    /// ## Returned Single Pattern Status register address.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{ReturnedSinglePatternStatus, Register};
+    ///
+    /// assert_eq!(ReturnedSinglePatternStatus::ADDR, ReturnedSinglePatternStatus::DEFAULT.addr());
+    /// ```
+    pub const ADDR: u8 = 0xA0;
+
+    /// ## Returned Single Pattern Status register reset value.
+    pub const RESET: u32 = 0x0000_0000;
+
+    /// ## Default value.
+    ///
+    /// This is the same as `default`, but as a `const` value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::ReturnedSinglePatternStatus;
+    ///
+    /// assert_eq!(ReturnedSinglePatternStatus::DEFAULT, ReturnedSinglePatternStatus::default());
+    /// ```
+    pub const DEFAULT: Self = Self(Self::RESET);
+
+    /// ## Bit offset for the `RSPS` field.
+    pub const RSPS_OFFSET: u8 = 0;
+
+    /// ## Bit mask for the `RSPS` field.
+    pub const RSPS_MASK: u32 = 0xffff_ffff << Self::RSPS_OFFSET;
+}
+
+impl ::core::fmt::Display for ReturnedSinglePatternStatus {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+        f.debug_struct("ReturnedSinglePatternStatus").finish()
+    }
+}
+
+#[cfg(feature = "defmt")]
+impl defmt::Format for ReturnedSinglePatternStatus {
+    fn format(&self, fmt: defmt::Formatter) {
+        defmt::write!(fmt, "ReturnedSinglePatternStatus {{  }}",);
+    }
+}
+
 #[derive(Debug, PartialEq)]
 pub enum Registers {
     ChipAddress(ChipAddress),
+    HashRate(HashRate),
     PLL0Parameter(PLL0Parameter),
+    ChipNonceOffset(ChipNonceOffset),
+    HashCountingNumber(HashCountingNumber),
+    TicketMask(TicketMask),
     MiscControl(MiscControl),
+    I2CControl(I2CControl),
+    OrderedClockEnable(OrderedClockEnable),
     FastUARTConfiguration(FastUARTConfiguration),
+    UARTRelay(UARTRelay),
+    TicketMask2(TicketMask2),
+    CoreRegisterControl(CoreRegisterControl),
+    CoreRegisterValue(CoreRegisterValue),
+    ExternalTemperatureSensorRead(ExternalTemperatureSensorRead),
+    ErrorFlag(ErrorFlag),
+    NonceErrorCounter(NonceErrorCounter),
+    NonceOverflowCounter(NonceOverflowCounter),
+    AnalogMuxControl(AnalogMuxControl),
+    IoDriverStrenghtConfiguration(IoDriverStrenghtConfiguration),
+    TimeOut(TimeOut),
     PLL1Parameter(PLL1Parameter),
     PLL2Parameter(PLL2Parameter),
     PLL3Parameter(PLL3Parameter),
+    OrderedClockMonitor(OrderedClockMonitor),
+    PLL0Divider(PLL0Divider),
+    PLL1Divider(PLL1Divider),
+    PLL2Divider(PLL2Divider),
+    PLL3Divider(PLL3Divider),
     ClockOrderControl0(ClockOrderControl0),
     ClockOrderControl1(ClockOrderControl1),
+    ClockOrderStatus(ClockOrderStatus),
+    FrequencySweepControl1(FrequencySweepControl1),
+    GoldenNonceForSweepReturn(GoldenNonceForSweepReturn),
+    ReturnedGroupPatternStatus(ReturnedGroupPatternStatus),
+    NonceReturnedTimeout(NonceReturnedTimeout),
+    ReturnedSinglePatternStatus(ReturnedSinglePatternStatus),
 }

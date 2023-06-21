@@ -92,15 +92,15 @@ impl Command {
     ///
     /// ```
     /// use bm1397_protocol::command::{Command, Destination};
-    /// use bm1397_protocol::register::ChipAddress;
+    /// use bm1397_protocol::register::{ChipAddress, I2CControl};
     ///
     /// // Enumerate the chain
     /// let cmd = Command::read_reg(ChipAddress::default(), Destination::All);
     /// assert_eq!(cmd, [0x55, 0xAA, 0x52, 0x05, 0x00, 0x00, 0x0A]);
     ///
     /// // Read I2CControl on chip with ChipAddress@64
-    /// // let cmd = Command::read_reg(I2CControl, Destination::Chip(64));
-    /// // assert_eq!(cmd, [0x55, 0xAA, 0x42, 0x05, 0x40, 0x1C, 0x0B]);
+    /// let cmd = Command::read_reg(I2CControl::default(), Destination::Chip(64));
+    /// assert_eq!(cmd, [0x55, 0xAA, 0x42, 0x05, 0x40, 0x1C, 0x0B]);
     /// ```
     pub fn read_reg(reg: impl Register, dest: Destination) -> [u8; 7] {
         let mut data: [u8; 7] = [0x55, 0xAA, Self::CMD_READ_REGISTER, 5, 0, reg.addr(), 0];
@@ -126,7 +126,7 @@ impl Command {
     /// use bm1397_protocol::register::{ClockOrderControl0, MiscControl};
     ///
     /// // Write ClockOrderControl0 value 0x0000_0000 on All chip of the chain
-    /// let cmd = Command::write_reg(ClockOrderControl0::default(), Destination::All);
+    /// let cmd = Command::write_reg(ClockOrderControl0::from(0x0000_0000), Destination::All);
     /// assert_eq!(cmd, [0x55, 0xAA, 0x51, 0x09, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x1C]);
     ///
     /// // Write MiscControl value 0x0000_7A31 on chip with ChipAddress@64
