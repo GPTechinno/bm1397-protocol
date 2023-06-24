@@ -33,4 +33,5 @@ pub enum Error {
     InvalidPreamble,
     InvalidCrc,
     UnknownRegister(u8),
+    UnknownCoreRegister(u8),
 }

@@ -1,7 +1,8 @@
 //! BM1397 Registers.
 
-use crate::core_register::CoreRegister;
+use crate::core_register::*;
 use crate::specifier::{BaudrateClockSelect, ClockSelect};
+use crate::Error;
 use fugit::HertzU32;
 
 pub trait Register {
@@ -1454,6 +1455,58 @@ impl CoreRegisterValue {
     /// ```
     pub const fn core_reg_val(&self) -> u8 {
         ((self.0 & Self::CORE_REG_VAL_MASK) >> Self::CORE_REG_VAL_OFFSET) as u8
+    }
+
+    /// ## Get the CoreRegister according to the given core_reg_id
+    /// and the current CORE_REG_VAL.
+    ///
+    /// ## Return
+    /// - `Ok(CoreRegisters)` with the corresponding `CoreRegister`.
+    /// - `Err(Error::UnknownCoreRegister(u8))` with the core register id
+    ///    if it do not match a known `CoreRegisters`.
+    ///
+    /// ### Examples
+    /// ```
+    /// use bm1397_protocol::core_register::{ProcessMonitorData, CoreRegisters};
+    /// use bm1397_protocol::Error;
+    /// use bm1397_protocol::register::CoreRegisterValue;
+    ///
+    /// let crv: CoreRegisterValue = CoreRegisterValue::from(0x0001_0234);
+    /// // ProcessMonitorData
+    /// let resp = crv.core_reg(0x02);
+    /// assert!(resp.is_ok());
+    /// assert_eq!(resp.unwrap(), CoreRegisters::ProcessMonitorData(ProcessMonitorData::from(0x34)));
+    ///
+    /// // Error::UnknownCoreRegister(0xF0)
+    /// let resp = crv.core_reg(0xF0);
+    /// assert!(resp.is_err());
+    /// assert_eq!(resp.unwrap_err(), Error::UnknownCoreRegister(0xF0));
+    /// ```
+    pub fn core_reg(&self, core_reg_id: u8) -> Result<CoreRegisters, Error> {
+        let core_reg = match core_reg_id {
+            ClockDelayCtrl::ID => {
+                CoreRegisters::ClockDelayCtrl(ClockDelayCtrl::from(self.core_reg_val()))
+            }
+            ProcessMonitorCtrl::ID => {
+                CoreRegisters::ProcessMonitorCtrl(ProcessMonitorCtrl::from(self.core_reg_val()))
+            }
+            ProcessMonitorData::ID => {
+                CoreRegisters::ProcessMonitorData(ProcessMonitorData::from(self.core_reg_val()))
+            }
+            CoreError::ID => CoreRegisters::CoreError(CoreError::from(self.core_reg_val())),
+            CoreEnable::ID => CoreRegisters::CoreEnable(CoreEnable::from(self.core_reg_val())),
+            HashClockCtrl::ID => {
+                CoreRegisters::HashClockCtrl(HashClockCtrl::from(self.core_reg_val()))
+            }
+            HashClockCounter::ID => {
+                CoreRegisters::HashClockCounter(HashClockCounter::from(self.core_reg_val()))
+            }
+            SweepClockCtrl::ID => {
+                CoreRegisters::SweepClockCtrl(SweepClockCtrl::from(self.core_reg_val()))
+            }
+            id => return Err(Error::UnknownCoreRegister(id)),
+        };
+        Ok(core_reg)
     }
 }
 
