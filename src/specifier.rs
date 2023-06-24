@@ -1,3 +1,5 @@
+//! BM1397 Specifiers.
+
 /// Baudrate CLocK SELect.
 ///
 /// This is used by [`MiscControl::bclk_sel`] and [`MiscControl::set_bclk_sel`] method.

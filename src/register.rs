@@ -1,8 +1,9 @@
-//! BM1397 Registers structures.
+//! BM1397 Registers.
 
+use crate::core_register::CoreRegister;
 use crate::specifier::{BaudrateClockSelect, ClockSelect};
-
 use fugit::HertzU32;
+
 pub trait Register {
     fn addr(&self) -> u8;
     fn val(&self) -> u32;
@@ -1284,19 +1285,65 @@ impl CoreRegisterControl {
     /// ```
     pub const DEFAULT: Self = Self(Self::RESET);
 
+    /// ## Bit offset for the `RD_WR1` field.
+    pub const RD_WR1_OFFSET: u8 = 31;
     /// ## Bit offset for the `CORE_ID` field.
     pub const CORE_ID_OFFSET: u8 = 16;
+    /// ## Bit offset for the `RD_WR2` field.
+    pub const RD_WR2_OFFSET: u8 = 15;
     /// ## Bit offset for the `CORE_REG_ID` field.
     pub const CORE_REG_ID_OFFSET: u8 = 8;
     /// ## Bit offset for the `CORE_REG_VAL` field.
     pub const CORE_REG_VAL_OFFSET: u8 = 0;
 
+    /// ## Bit mask for the `RD_WR` field.
+    pub const RD_WR_MASK: u32 = 0b1 << Self::RD_WR1_OFFSET | 0b1 << Self::RD_WR2_OFFSET;
     /// ## Bit mask for the `CORE_ID` field.
     pub const CORE_ID_MASK: u32 = 0xff << Self::CORE_ID_OFFSET;
     /// ## Bit mask for the `CORE_REG_ID` field.
     pub const CORE_REG_ID_MASK: u32 = 0b1111 << Self::CORE_REG_ID_OFFSET;
     /// ## Bit mask for the `CORE_REG_VAL` field.
     pub const CORE_REG_VAL_MASK: u32 = 0xff << Self::CORE_REG_VAL_OFFSET;
+
+    /// ## Set CoreRegisterControl for a Core Register Read.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{CoreRegisterControl, Register};
+    /// use bm1397_protocol::core_register::{ClockDelayCtrl};
+    ///
+    /// let crc: CoreRegisterControl = CoreRegisterControl::DEFAULT;
+    /// assert_eq!(crc.val(), 0x0000_0000);
+    /// let cdc: ClockDelayCtrl = ClockDelayCtrl::default();
+    /// let crc: CoreRegisterControl = crc.read(0, cdc);
+    /// assert_eq!(crc.val(), 0x0000_00ff);
+    /// let cdc: ClockDelayCtrl = cdc.enable_mm();
+    /// let crc: CoreRegisterControl = crc.write(0, cdc);
+    /// assert_eq!(crc.val(), 0x8000_8004);
+    /// ```
+    #[must_use = "read returns a modified CoreRegisterControl"]
+    pub fn read(mut self, core_id: u8, core_reg: impl CoreRegister) -> Self {
+        self.0 &= !Self::RD_WR_MASK;
+        self.0 &= !Self::CORE_ID_MASK;
+        self.0 |= ((core_id as u32) << Self::CORE_ID_OFFSET) & Self::CORE_ID_MASK;
+        self.0 &= !Self::CORE_REG_ID_MASK;
+        self.0 |= ((core_reg.id() as u32) << Self::CORE_REG_ID_OFFSET) & Self::CORE_REG_ID_MASK;
+        self.0 |= Self::CORE_REG_VAL_MASK;
+        self
+    }
+    /// ## Set CoreRegisterControl for a Core Register Write.
+    #[must_use = "write returns a modified CoreRegisterControl"]
+    pub fn write(mut self, core_id: u8, core_reg: impl CoreRegister) -> Self {
+        self.0 |= Self::RD_WR_MASK;
+        self.0 &= !Self::CORE_ID_MASK;
+        self.0 |= ((core_id as u32) << Self::CORE_ID_OFFSET) & Self::CORE_ID_MASK;
+        self.0 &= !Self::CORE_REG_ID_MASK;
+        self.0 |= ((core_reg.id() as u32) << Self::CORE_REG_ID_OFFSET) & Self::CORE_REG_ID_MASK;
+        self.0 &= !Self::CORE_REG_VAL_MASK;
+        self.0 |= ((core_reg.val() as u32) << Self::CORE_REG_VAL_OFFSET) & Self::CORE_REG_VAL_MASK;
+        self
+    }
 }
 
 impl ::core::fmt::Display for CoreRegisterControl {
@@ -1349,13 +1396,65 @@ impl CoreRegisterValue {
 
     /// ## Bit offset for the `CORE_ID` field.
     pub const CORE_ID_OFFSET: u8 = 16;
+    /// ## Bit offset for the `FOUND` field.
+    pub const FOUND_OFFSET: u8 = 8;
     /// ## Bit offset for the `CORE_REG_VAL` field.
     pub const CORE_REG_VAL_OFFSET: u8 = 0;
 
     /// ## Bit mask for the `CORE_ID` field.
-    pub const CORE_ID_MASK: u32 = 0xffff << Self::CORE_ID_OFFSET;
+    pub const CORE_ID_MASK: u32 = 0x1ff << Self::CORE_ID_OFFSET;
+    /// ## Bit mask for the `FOUND` field.
+    pub const FOUND_MASK: u32 = 0xff << Self::FOUND_OFFSET;
     /// ## Bit mask for the `CORE_REG_VAL` field.
-    pub const CORE_REG_VAL_MASK: u32 = 0xffff << Self::CORE_REG_VAL_OFFSET;
+    pub const CORE_REG_VAL_MASK: u32 = 0xff << Self::CORE_REG_VAL_OFFSET;
+
+    /// ## Get the CORE_ID.
+    ///
+    /// This returns an `u16` with the CORE_ID value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::CoreRegisterValue;
+    ///
+    /// let crv: CoreRegisterValue = CoreRegisterValue::from(0x0001_1234);
+    /// assert_eq!(crv.core_id(), 0x0001);
+    /// ```
+    pub const fn core_id(&self) -> u16 {
+        ((self.0 & Self::CORE_ID_MASK) >> Self::CORE_ID_OFFSET) as u16
+    }
+
+    /// ## Get the FOUND.
+    ///
+    /// This returns an `u8` with the FOUND value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::CoreRegisterValue;
+    ///
+    /// let crv: CoreRegisterValue = CoreRegisterValue::from(0x0001_1234);
+    /// assert_eq!(crv.found(), 0x12);
+    /// ```
+    pub const fn found(&self) -> u8 {
+        ((self.0 & Self::FOUND_MASK) >> Self::FOUND_OFFSET) as u8
+    }
+
+    /// ## Get the CORE_REG_VAL.
+    ///
+    /// This returns an `u8` with the CORE_REG_VAL value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::CoreRegisterValue;
+    ///
+    /// let crv: CoreRegisterValue = CoreRegisterValue::from(0x0001_1234);
+    /// assert_eq!(crv.core_reg_val(), 0x34);
+    /// ```
+    pub const fn core_reg_val(&self) -> u8 {
+        ((self.0 & Self::CORE_REG_VAL_MASK) >> Self::CORE_REG_VAL_OFFSET) as u8
+    }
 }
 
 impl ::core::fmt::Display for CoreRegisterValue {

@@ -1,5 +1,9 @@
+//! BM1397 Commands.
+
 use crate::crc::{crc16, crc5};
-use crate::register::Register;
+
+use crate::core_register::CoreRegister;
+use crate::register::{CoreRegisterControl, Register};
 use byteorder::{BigEndian, ByteOrder, LittleEndian};
 
 /// Some command can be send to All chip in the chain or to a specific one
@@ -154,6 +158,50 @@ impl Command {
         BigEndian::write_u32(&mut data[6..], reg.val());
         data[10] = crc5(&data[2..10]);
         data
+    }
+
+    /// # Read Core Register Command
+    ///
+    /// Used to send a Read Core Register command on the chain.
+    ///
+    /// All chips on the chain or only a specific one can be addressed by this command
+    /// using the `dest` parameter.
+    ///
+    /// ## Example
+    ///
+    /// ```
+    /// use bm1397_protocol::command::{Command, Destination};
+    /// use bm1397_protocol::core_register::HashClockCounter;
+    ///
+    /// // Read HashClockCounter on core 0 of chip with ChipAddress@40
+    /// let cmd = Command::read_core_reg(0, HashClockCounter::default(), Destination::Chip(40));
+    /// assert_eq!(cmd, [0x55, 0xAA, 0x41, 0x09, 0x28, 0x3C, 0x00, 0x00, 0x06, 0xff, 0x0A]);
+    /// ```
+    pub fn read_core_reg(core_id: u8, reg: impl CoreRegister, dest: Destination) -> [u8; 11] {
+        let ctrl = CoreRegisterControl::default().read(core_id, reg);
+        Self::write_reg(ctrl, dest)
+    }
+
+    /// # Write Core Register Command
+    ///
+    /// Used to send a Write Core Register command on the chain.
+    ///
+    /// All chips on the chain or only a specific one can be addressed by this command
+    /// using the `dest` parameter.
+    ///
+    /// ## Example
+    ///
+    /// ```
+    /// use bm1397_protocol::command::{Command, Destination};
+    /// use bm1397_protocol::core_register::HashClockCtrl;
+    ///
+    /// // Write HashClockCtrl value 0x0001 on core 0 of chip with ChipAddress@40
+    /// let cmd = Command::write_core_reg(0, HashClockCtrl::from(0x0001), Destination::Chip(40));
+    /// assert_eq!(cmd, [0x55, 0xAA, 0x41, 0x09, 0x28, 0x3C, 0x80, 0x00, 0x85, 0x01, 0x13]);
+    /// ```
+    pub fn write_core_reg(core_id: u8, reg: impl CoreRegister, dest: Destination) -> [u8; 11] {
+        let ctrl = CoreRegisterControl::default().write(core_id, reg);
+        Self::write_reg(ctrl, dest)
     }
 
     /// # Job with 1 Midstate Command

@@ -1,12 +1,18 @@
 #![no_std]
 //! BM1397 protocol driver.
 
-pub mod command;
 mod crc;
+
+pub mod command;
+pub mod core_register;
 pub mod register;
 pub mod response;
 pub mod specifier;
 
+// pub use core_register::{
+//     ClockDelayCtrl, CoreEnable, CoreError, HashClockCounter, HashClockCtrl, ProcessMonitorCtrl,
+//     ProcessMonitorData, SweepClockCtrl,
+// };
 // pub use command::{Command, Destination, Midstate};
 // pub use register::{
 //     AnalogMuxControl, ChipAddress, ChipNonceOffset, ClockOrderControl0, ClockOrderControl1,
