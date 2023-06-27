@@ -91,6 +91,88 @@ impl ClockDelayCtrl {
     /// ## Bit mask for the `SWPF_MODE` field.
     pub const SWPF_MODE_MASK: u8 = 0b1 << Self::SWPF_MODE_OFFSET;
 
+    /// ## Get the CCdly value.
+    ///
+    /// This returns an `u8` with the CCdly value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::core_register::ClockDelayCtrl;
+    ///
+    /// let cdc: ClockDelayCtrl = ClockDelayCtrl::DEFAULT;
+    /// assert_eq!(cdc.ccdly(), 0x00);
+    /// let cdc: ClockDelayCtrl = cdc.set_ccdly(0x03);
+    /// assert_eq!(cdc.ccdly(), 0x03);
+    /// ```
+    pub const fn ccdly(&self) -> u8 {
+        (self.0 & Self::CCDLY_SEL_MASK) >> Self::CCDLY_SEL_OFFSET
+    }
+    /// ## Set the CCdly value.
+    #[must_use = "set_ccdly returns a modified ClockDelayCtrl"]
+    pub const fn set_ccdly(mut self, ccdly: u8) -> Self {
+        self.0 &= !Self::CCDLY_SEL_MASK;
+        self.0 |= ccdly << Self::CCDLY_SEL_OFFSET;
+        self
+    }
+
+    /// ## Get the PWth value.
+    ///
+    /// This returns an `u8` with the PWth value.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::core_register::ClockDelayCtrl;
+    ///
+    /// let cdc: ClockDelayCtrl = ClockDelayCtrl::DEFAULT;
+    /// assert_eq!(cdc.pwth(), 0x00);
+    /// let cdc: ClockDelayCtrl = cdc.set_pwth(0x03);
+    /// assert_eq!(cdc.pwth(), 0x03);
+    /// ```
+    pub const fn pwth(&self) -> u8 {
+        (self.0 & Self::PWTH_SEL_MASK) >> Self::PWTH_SEL_OFFSET
+    }
+    /// ## Set the PWth value.
+    #[must_use = "set_pwth returns a modified ClockDelayCtrl"]
+    pub const fn set_pwth(mut self, pwth: u8) -> Self {
+        self.0 &= !Self::PWTH_SEL_MASK;
+        self.0 |= pwth << Self::PWTH_SEL_OFFSET;
+        self
+    }
+
+    /// ## Get the Hash Clock state.
+    ///
+    /// This returns an `bool` with the Hash Clock state.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::core_register::ClockDelayCtrl;
+    ///
+    /// let cdc: ClockDelayCtrl = ClockDelayCtrl::DEFAULT;
+    /// assert!(!cdc.hash_clock_enabled());
+    /// let cdc: ClockDelayCtrl = cdc.enable_hash_clock();
+    /// assert!(cdc.hash_clock_enabled());
+    /// let cdc: ClockDelayCtrl = cdc.disable_hash_clock();
+    /// assert!(!cdc.hash_clock_enabled());
+    /// ```
+    pub const fn hash_clock_enabled(&self) -> bool {
+        self.0 & Self::HASH_CLKEN_MASK == Self::HASH_CLKEN_MASK
+    }
+    /// ## Enable the Hash Clock.
+    #[must_use = "enable_hash_clock returns a modified ClockDelayCtrl"]
+    pub const fn enable_hash_clock(mut self) -> Self {
+        self.0 |= Self::HASH_CLKEN_MASK;
+        self
+    }
+    /// ## Disable the Hash Clock.
+    #[must_use = "disable_hash_clock returns a modified ClockDelayCtrl"]
+    pub const fn disable_hash_clock(mut self) -> Self {
+        self.0 &= !Self::HASH_CLKEN_MASK;
+        self
+    }
+
     /// ## Get the Multi Midstate state.
     ///
     /// This returns an `bool` with the Multi Midstate state.
@@ -101,21 +183,57 @@ impl ClockDelayCtrl {
     /// use bm1397_protocol::core_register::ClockDelayCtrl;
     ///
     /// let cdc: ClockDelayCtrl = ClockDelayCtrl::DEFAULT;
-    /// assert!(!cdc.mm_enabled());
+    /// assert!(!cdc.multi_midstate_enabled());
+    /// let cdc: ClockDelayCtrl = cdc.enable_multi_midstate();
+    /// assert!(cdc.multi_midstate_enabled());
+    /// let cdc: ClockDelayCtrl = cdc.disable_multi_midstate();
+    /// assert!(!cdc.multi_midstate_enabled());
     /// ```
-    pub const fn mm_enabled(&self) -> bool {
+    pub const fn multi_midstate_enabled(&self) -> bool {
         self.0 & Self::MMEN_MASK == Self::MMEN_MASK
     }
     /// ## Enable the Multi Midstate mode (AsicBoost).
-    #[must_use = "enable_mm returns a modified ClockDelayCtrl"]
-    pub const fn enable_mm(mut self) -> Self {
+    #[must_use = "enable_multi_midstate returns a modified ClockDelayCtrl"]
+    pub const fn enable_multi_midstate(mut self) -> Self {
         self.0 |= Self::MMEN_MASK;
         self
     }
     /// ## Disable the Multi Midstate mode (AsicBoost).
-    #[must_use = "disable_mm returns a modified ClockDelayCtrl"]
-    pub const fn disable_mm(mut self) -> Self {
+    #[must_use = "disable_multi_midstate returns a modified ClockDelayCtrl"]
+    pub const fn disable_multi_midstate(mut self) -> Self {
         self.0 &= !Self::MMEN_MASK;
+        self
+    }
+
+    /// ## Get the Sweep Frequency Mode state.
+    ///
+    /// This returns an `bool` with the Sweep Frequency Mode state.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::core_register::ClockDelayCtrl;
+    ///
+    /// let cdc: ClockDelayCtrl = ClockDelayCtrl::DEFAULT;
+    /// assert!(!cdc.sweep_frequency_mode_enabled());
+    /// let cdc: ClockDelayCtrl = cdc.enable_sweep_frequency_mode();
+    /// assert!(cdc.sweep_frequency_mode_enabled());
+    /// let cdc: ClockDelayCtrl = cdc.disable_sweep_frequency_mode();
+    /// assert!(!cdc.sweep_frequency_mode_enabled());
+    /// ```
+    pub const fn sweep_frequency_mode_enabled(&self) -> bool {
+        self.0 & Self::SWPF_MODE_MASK == Self::SWPF_MODE_MASK
+    }
+    /// ## Enable the Sweep Frequency Mode.
+    #[must_use = "enable_sweep_frequency_mode returns a modified ClockDelayCtrl"]
+    pub const fn enable_sweep_frequency_mode(mut self) -> Self {
+        self.0 |= Self::SWPF_MODE_MASK;
+        self
+    }
+    /// ## Disable the Sweep Frequency Mode.
+    #[must_use = "disable_sweep_frequency_mode returns a modified ClockDelayCtrl"]
+    pub const fn disable_sweep_frequency_mode(mut self) -> Self {
+        self.0 &= !Self::SWPF_MODE_MASK;
         self
     }
 }
@@ -123,7 +241,14 @@ impl ClockDelayCtrl {
 impl ::core::fmt::Display for ClockDelayCtrl {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         f.debug_struct("ClockDelayCtrl")
-            .field("mm_enabled", &self.mm_enabled())
+            .field("ccdly", &self.ccdly())
+            .field("pwth", &self.pwth())
+            .field("hash_clock_enabled", &self.hash_clock_enabled())
+            .field("multi_midstate_enabled", &self.multi_midstate_enabled())
+            .field(
+                "sweep_frequency_mode_enabled",
+                &self.sweep_frequency_mode_enabled(),
+            )
             .finish()
     }
 }
@@ -133,8 +258,12 @@ impl defmt::Format for ClockDelayCtrl {
     fn format(&self, fmt: defmt::Formatter) {
         defmt::write!(
             fmt,
-            "ClockDelayCtrl {{ mm_enabled: {} }}",
-            self.mm_enabled(),
+            "ClockDelayCtrl {{ ccdly: {}, pwth: {}, hash_clock_enabled: {}, multi_midstate_enabled: {}, sweep_frequency_mode_enabled: {} }}",
+            self.ccdly(),
+            self.pwth(),
+            self.hash_clock_enabled(),
+            self.multi_midstate_enabled(),
+            self.sweep_frequency_mode_enabled(),
         );
     }
 }
