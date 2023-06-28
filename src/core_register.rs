@@ -1,5 +1,7 @@
 //! BM1397 Core Registers.
 
+use crate::specifier::ProcessMonitorSelect;
+
 pub trait CoreRegister {
     fn id(&self) -> u8;
     fn val(&self) -> u8;
@@ -310,18 +312,57 @@ impl ProcessMonitorCtrl {
     pub const PM_START_MASK: u8 = 0b1 << Self::PM_START_OFFSET;
     /// ## Bit mask for the `PM_SEL` field.
     pub const PM_SEL_MASK: u8 = 0b11 << Self::PM_SEL_OFFSET;
+
+    /// ## Get the Started state.
+    ///
+    /// This returns an `bool` with the Started state.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::core_register::ProcessMonitorCtrl;
+    /// use bm1397_protocol::specifier::ProcessMonitorSelect;
+    ///
+    /// let pmc: ProcessMonitorCtrl = ProcessMonitorCtrl::DEFAULT;
+    /// assert!(!pmc.started());
+    /// let pmc: ProcessMonitorCtrl = pmc.start(ProcessMonitorSelect::HVTDelayChain);
+    /// assert!(pmc.started());
+    /// assert_eq!(pmc.pm_sel(), ProcessMonitorSelect::HVTDelayChain);
+    /// ```
+    pub const fn started(&self) -> bool {
+        self.0 & Self::PM_START_MASK == Self::PM_START_MASK
+    }
+    pub fn pm_sel(&self) -> ProcessMonitorSelect {
+        ProcessMonitorSelect::try_from((self.0 & Self::PM_SEL_MASK) >> Self::PM_SEL_OFFSET).unwrap()
+    }
+    /// ## Start Process Monitor on pm_sel.
+    #[must_use = "start returns a modified ProcessMonitorCtrl"]
+    pub const fn start(mut self, pm_sel: ProcessMonitorSelect) -> Self {
+        self.0 |= Self::PM_START_MASK;
+        self.0 &= !Self::PM_SEL_MASK;
+        self.0 |= (pm_sel as u8) << Self::PM_SEL_OFFSET;
+        self
+    }
 }
 
 impl ::core::fmt::Display for ProcessMonitorCtrl {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        f.debug_struct("ProcessMonitorCtrl").finish()
+        f.debug_struct("ProcessMonitorCtrl")
+            .field("started", &self.started())
+            .field("pm_sel", &self.pm_sel())
+            .finish()
     }
 }
 
 #[cfg(feature = "defmt")]
 impl defmt::Format for ProcessMonitorCtrl {
     fn format(&self, fmt: defmt::Formatter) {
-        defmt::write!(fmt, "ProcessMonitorCtrl {{ }}",);
+        defmt::write!(
+            fmt,
+            "ProcessMonitorCtrl {{ started: {}, pm_sel: {} }}",
+            self.started(),
+            self.pm_sel()
+        );
     }
 }
 

@@ -1319,7 +1319,7 @@ impl CoreRegisterControl {
     /// let cdc: ClockDelayCtrl = ClockDelayCtrl::default();
     /// let crc: CoreRegisterControl = crc.read(0, cdc);
     /// assert_eq!(crc.val(), 0x0000_00ff);
-    /// let cdc: ClockDelayCtrl = cdc.enable_mm();
+    /// let cdc: ClockDelayCtrl = cdc.enable_multi_midstate();
     /// let crc: CoreRegisterControl = crc.write(0, cdc);
     /// assert_eq!(crc.val(), 0x8000_8004);
     /// ```

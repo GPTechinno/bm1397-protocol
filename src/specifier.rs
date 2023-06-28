@@ -84,3 +84,75 @@ impl TryFrom<u8> for ClockSelect {
         Self::from_raw(val)
     }
 }
+
+/// Process Monitor SELect.
+///
+/// This is used by [`ProcessMonitorCtrl::pm_sel`] and [`ProcessMonitorCtrl::start`] method.
+///
+/// [`ProcessMonitorCtrl::pm_sel`]: crate::core_register::ProcessMonitorCtrl::pm_sel
+/// [`ProcessMonitorCtrl::start`]: crate::core_register::ProcessMonitorCtrl::start
+#[derive(Copy, Clone, Eq, PartialEq, Debug, PartialOrd, Ord, Hash, Default)]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
+#[repr(u8)]
+pub enum ProcessMonitorSelect {
+    /// Process Monitor on LVT delay chain.
+    #[default]
+    LVTDelayChain = 0,
+    /// Process Monitor on SVT delay chain.
+    SVTDelayChain = 1,
+    /// Process Monitor on HVT delay chain.
+    HVTDelayChain = 2,
+    /// Process Monitor on Critical path chain.
+    CriticalPathChain = 3,
+}
+impl From<ProcessMonitorSelect> for u8 {
+    /// Get the register value from a buffer size.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use bm1397_protocol::specifier::ProcessMonitorSelect;
+    ///
+    /// assert_eq!(u8::from(ProcessMonitorSelect::LVTDelayChain), 0);
+    /// assert_eq!(u8::from(ProcessMonitorSelect::SVTDelayChain), 1);
+    /// assert_eq!(u8::from(ProcessMonitorSelect::HVTDelayChain), 2);
+    /// assert_eq!(u8::from(ProcessMonitorSelect::CriticalPathChain), 3);
+    /// ```
+    fn from(val: ProcessMonitorSelect) -> u8 {
+        val as u8
+    }
+}
+impl TryFrom<u8> for ProcessMonitorSelect {
+    type Error = u8;
+
+    /// Get the buffer size given the register value.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use bm1397_protocol::specifier::ProcessMonitorSelect;
+    ///
+    /// assert_eq!(ProcessMonitorSelect::try_from(0), Ok(ProcessMonitorSelect::LVTDelayChain));
+    /// assert_eq!(ProcessMonitorSelect::try_from(1), Ok(ProcessMonitorSelect::SVTDelayChain));
+    /// assert_eq!(ProcessMonitorSelect::try_from(2), Ok(ProcessMonitorSelect::HVTDelayChain));
+    /// assert_eq!(ProcessMonitorSelect::try_from(3), Ok(ProcessMonitorSelect::CriticalPathChain));
+    /// assert_eq!(ProcessMonitorSelect::try_from(4), Err(4));
+    /// ```
+    fn try_from(val: u8) -> Result<ProcessMonitorSelect, u8> {
+        match val {
+            x if x == ProcessMonitorSelect::LVTDelayChain as u8 => {
+                Ok(ProcessMonitorSelect::LVTDelayChain)
+            }
+            x if x == ProcessMonitorSelect::SVTDelayChain as u8 => {
+                Ok(ProcessMonitorSelect::SVTDelayChain)
+            }
+            x if x == ProcessMonitorSelect::HVTDelayChain as u8 => {
+                Ok(ProcessMonitorSelect::HVTDelayChain)
+            }
+            x if x == ProcessMonitorSelect::CriticalPathChain as u8 => {
+                Ok(ProcessMonitorSelect::CriticalPathChain)
+            }
+            _ => Err(val),
+        }
+    }
+}
