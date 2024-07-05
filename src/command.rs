@@ -4,7 +4,6 @@ use crate::crc::{crc16, crc5};
 
 use crate::core_register::CoreRegister;
 use crate::register::{CoreRegisterControl, Register};
-use byteorder::{BigEndian, ByteOrder, LittleEndian};
 
 /// Some command can be send to All chip in the chain or to a specific one
 pub enum Destination {
@@ -155,7 +154,7 @@ impl Command {
             Destination::All => data[2] += Self::CMD_ALL_CHIP,
             Destination::Chip(c) => data[4] = c,
         }
-        BigEndian::write_u32(&mut data[6..], reg.val());
+        data[6..10].clone_from_slice(&reg.val().to_be_bytes());
         data[10] = crc5(&data[2..10]);
         data
     }
@@ -244,17 +243,17 @@ impl Command {
         data[3] = data.len() as u8 - 2;
         data[4] = job_id;
         data[5] = midstates.len() as u8;
-        // LittleEndian::write_u32(&mut data[6..], 0u32); // starting_nonce ?
-        LittleEndian::write_u32(&mut data[10..], n_bits);
-        LittleEndian::write_u32(&mut data[14..], n_time);
-        LittleEndian::write_u32(&mut data[18..], merkle_root);
+        // data[6..].clone_from_slice(&0u32.to_le_bytes()); // starting_nonce ?
+        data[10..14].clone_from_slice(&n_bits.to_le_bytes());
+        data[14..18].clone_from_slice(&n_time.to_le_bytes());
+        data[18..22].clone_from_slice(&merkle_root.to_le_bytes());
         let mut offset = 22;
         for ms in midstates.into_iter() {
             data[offset..offset + ms.len()].clone_from_slice(ms);
             offset += ms.len();
         }
         let crc = crc16(&data[2..offset]);
-        BigEndian::write_u16(&mut data[offset..], crc);
+        data[offset..offset + 2].clone_from_slice(&crc.to_be_bytes());
         data
     }
 
@@ -320,17 +319,17 @@ impl Command {
         data[3] = data.len() as u8 - 2;
         data[4] = job_id;
         data[5] = midstates.len() as u8;
-        // LittleEndian::write_u32(&mut data[6..], 0u32); // starting_nonce ?
-        LittleEndian::write_u32(&mut data[10..], n_bits);
-        LittleEndian::write_u32(&mut data[14..], n_time);
-        LittleEndian::write_u32(&mut data[18..], merkle_root);
+        // data[6..].clone_from_slice(&0u32.to_le_bytes()); // starting_nonce ?
+        data[10..14].clone_from_slice(&n_bits.to_le_bytes());
+        data[14..18].clone_from_slice(&n_time.to_le_bytes());
+        data[18..22].clone_from_slice(&merkle_root.to_le_bytes());
         let mut offset = 22;
         for ms in midstates.into_iter() {
             data[offset..offset + ms.len()].clone_from_slice(ms);
             offset += ms.len();
         }
         let crc = crc16(&data[2..offset]);
-        BigEndian::write_u16(&mut data[offset..], crc);
+        data[offset..offset + 2].clone_from_slice(&crc.to_be_bytes());
         data
     }
 }
