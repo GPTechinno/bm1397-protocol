@@ -6,7 +6,12 @@ use crate::Error;
 use fugit::HertzU32;
 
 pub trait Register {
-    fn addr(&self) -> u8;
+    const ADDR: u8;
+
+    fn addr(&self) -> u8 {
+        Self::ADDR
+    }
+
     fn val(&self) -> u32;
 }
 
@@ -31,9 +36,8 @@ macro_rules! impl_boilerplate_for {
         }
 
         impl Register for $REG {
-            fn addr(&self) -> u8 {
-                Self::ADDR
-            }
+            const ADDR: u8 = $REG::ADDR;
+
             fn val(&self) -> u32 {
                 self.0
             }
@@ -1317,14 +1321,14 @@ impl CoreRegisterControl {
     /// let crc: CoreRegisterControl = CoreRegisterControl::DEFAULT;
     /// assert_eq!(crc.val(), 0x0000_0000);
     /// let cdc: ClockDelayCtrl = ClockDelayCtrl::default();
-    /// let crc: CoreRegisterControl = crc.read(0, cdc);
+    /// let crc: CoreRegisterControl = crc.read(0, &cdc);
     /// assert_eq!(crc.val(), 0x0000_00ff);
     /// let cdc: ClockDelayCtrl = cdc.enable_multi_midstate();
-    /// let crc: CoreRegisterControl = crc.write(0, cdc);
+    /// let crc: CoreRegisterControl = crc.write(0, &cdc);
     /// assert_eq!(crc.val(), 0x8000_8004);
     /// ```
     #[must_use = "read returns a modified CoreRegisterControl"]
-    pub fn read(mut self, core_id: u8, core_reg: impl CoreRegister) -> Self {
+    pub const fn read<T: CoreRegister>(mut self, core_id: u8, core_reg: &T) -> Self {
         self.0 &= !Self::RD_WR_MASK;
         self.0 &= !Self::CORE_ID_MASK;
         self.0 |= ((core_id as u32) << Self::CORE_ID_OFFSET) & Self::CORE_ID_MASK;
@@ -1335,7 +1339,7 @@ impl CoreRegisterControl {
     }
     /// ## Set CoreRegisterControl for a Core Register Write.
     #[must_use = "write returns a modified CoreRegisterControl"]
-    pub fn write(mut self, core_id: u8, core_reg: impl CoreRegister) -> Self {
+    pub const fn write<T: CoreRegister>(mut self, core_id: u8, core_reg: &T) -> Self {
         self.0 |= Self::RD_WR_MASK;
         self.0 &= !Self::CORE_ID_MASK;
         self.0 |= ((core_id as u32) << Self::CORE_ID_OFFSET) & Self::CORE_ID_MASK;
@@ -1482,7 +1486,7 @@ impl CoreRegisterValue {
     /// assert!(resp.is_err());
     /// assert_eq!(resp.unwrap_err(), Error::UnknownCoreRegister(0xF0));
     /// ```
-    pub fn core_reg(&self, core_reg_id: u8) -> Result<CoreRegisters, Error> {
+    pub const fn core_reg(&self, core_reg_id: u8) -> Result<CoreRegisters, Error> {
         let core_reg = match core_reg_id {
             ClockDelayCtrl::ID => {
                 CoreRegisters::ClockDelayCtrl(ClockDelayCtrl::from(self.core_reg_val()))

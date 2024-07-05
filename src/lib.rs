@@ -1,4 +1,7 @@
 #![no_std]
+#![feature(const_trait_impl)]
+#![feature(effects)]
+#![feature(const_refs_to_cell)]
 //! BM1397 protocol driver.
 
 mod crc;

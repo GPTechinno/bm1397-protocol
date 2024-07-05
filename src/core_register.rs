@@ -417,7 +417,7 @@ impl ProcessMonitorData {
     /// let pmd: ProcessMonitorData = ProcessMonitorData::DEFAULT;
     /// assert_eq!(pmd.data(), 0x00);
     /// ```
-    pub fn data(&self) -> u8 {
+    pub const fn data(&self) -> u8 {
         (self.0 & Self::DATA_MASK) >> Self::DATA_OFFSET
     }
 }
@@ -508,7 +508,7 @@ impl CoreError {
     /// let ce: CoreError = CoreError::DEFAULT;
     /// assert_eq!(ce.cmd_err_cnt(), 0x00);
     /// ```
-    pub fn cmd_err_cnt(&self) -> u8 {
+    pub const fn cmd_err_cnt(&self) -> u8 {
         (self.0 & Self::CMD_ERR_CNT_MASK) >> Self::CMD_ERR_CNT_OFFSET
     }
 }

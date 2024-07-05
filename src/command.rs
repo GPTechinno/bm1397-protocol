@@ -36,7 +36,7 @@ impl Command {
     /// let cmd = Command::chain_inactive();
     /// assert_eq!(cmd, [0x55, 0xAA, 0x53, 0x05, 0x00, 0x00, 0x03]);
     /// ```
-    pub fn chain_inactive() -> [u8; 7] {
+    pub const fn chain_inactive() -> [u8; 7] {
         let mut data: [u8; 7] = [
             0x55,
             0xAA,
@@ -74,7 +74,7 @@ impl Command {
     /// let cmd = Command::set_chip_addr(0x08);
     /// assert_eq!(cmd, [0x55, 0xAA, 0x40, 0x05, 0x08, 0x00, 0x07]);
     /// ```
-    pub fn set_chip_addr(addr: u8) -> [u8; 7] {
+    pub const fn set_chip_addr(addr: u8) -> [u8; 7] {
         let mut data: [u8; 7] = [0x55, 0xAA, Self::CMD_SET_CHIP_ADDR, 5, addr, 0, 0];
         data[6] = crc5(&data[2..6]);
         data
@@ -98,15 +98,15 @@ impl Command {
     /// use bm1397_protocol::register::{ChipAddress, I2CControl};
     ///
     /// // Enumerate the chain
-    /// let cmd = Command::read_reg(ChipAddress::default(), Destination::All);
+    /// let cmd = Command::read_reg(&ChipAddress::DEFAULT, Destination::All);
     /// assert_eq!(cmd, [0x55, 0xAA, 0x52, 0x05, 0x00, 0x00, 0x0A]);
     ///
     /// // Read I2CControl on chip with ChipAddress@64
-    /// let cmd = Command::read_reg(I2CControl::default(), Destination::Chip(64));
+    /// let cmd = Command::read_reg(&I2CControl::DEFAULT, Destination::Chip(64));
     /// assert_eq!(cmd, [0x55, 0xAA, 0x42, 0x05, 0x40, 0x1C, 0x0B]);
     /// ```
-    pub fn read_reg(reg: impl Register, dest: Destination) -> [u8; 7] {
-        let mut data: [u8; 7] = [0x55, 0xAA, Self::CMD_READ_REGISTER, 5, 0, reg.addr(), 0];
+    pub const fn read_reg<T: Register>(reg: &T, dest: Destination) -> [u8; 7] {
+        let mut data: [u8; 7] = [0x55, 0xAA, Self::CMD_READ_REGISTER, 5, 0, T::ADDR, 0];
         match dest {
             Destination::All => data[2] += Self::CMD_ALL_CHIP,
             Destination::Chip(c) => data[4] = c,
@@ -129,21 +129,21 @@ impl Command {
     /// use bm1397_protocol::register::{ClockOrderControl0, MiscControl};
     ///
     /// // Write ClockOrderControl0 value 0x0000_0000 on All chip of the chain
-    /// let cmd = Command::write_reg(ClockOrderControl0::from(0x0000_0000), Destination::All);
+    /// let cmd = Command::write_reg(&ClockOrderControl0::from(0x0000_0000), Destination::All);
     /// assert_eq!(cmd, [0x55, 0xAA, 0x51, 0x09, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x1C]);
     ///
     /// // Write MiscControl value 0x0000_7A31 on chip with ChipAddress@64
-    /// let cmd = Command::write_reg(MiscControl::from(0x0000_7A31), Destination::Chip(64));
+    /// let cmd = Command::write_reg(&MiscControl::from(0x0000_7A31), Destination::Chip(64));
     /// assert_eq!(cmd, [0x55, 0xAA, 0x41, 0x09, 0x40, 0x18, 0x00, 0x00, 0x7A, 0x31, 0x11]);
     /// ```
-    pub fn write_reg(reg: impl Register, dest: Destination) -> [u8; 11] {
+    pub const fn write_reg<T: Register>(reg: &T, dest: Destination) -> [u8; 11] {
         let mut data: [u8; 11] = [
             0x55,
             0xAA,
             Self::CMD_WRITE_REGISTER,
             9,
             0,
-            reg.addr(),
+            T::ADDR,
             0,
             0,
             0,
@@ -154,7 +154,11 @@ impl Command {
             Destination::All => data[2] += Self::CMD_ALL_CHIP,
             Destination::Chip(c) => data[4] = c,
         }
-        data[6..10].clone_from_slice(&reg.val().to_be_bytes());
+        let word = reg.val().to_be_bytes();
+        data[6] = word[0];
+        data[7] = word[1];
+        data[8] = word[2];
+        data[9] = word[3];
         data[10] = crc5(&data[2..10]);
         data
     }
@@ -173,12 +177,16 @@ impl Command {
     /// use bm1397_protocol::core_register::HashClockCounter;
     ///
     /// // Read HashClockCounter on core 0 of chip with ChipAddress@40
-    /// let cmd = Command::read_core_reg(0, HashClockCounter::default(), Destination::Chip(40));
+    /// let cmd = Command::read_core_reg(0, &HashClockCounter::DEFAULT, Destination::Chip(40));
     /// assert_eq!(cmd, [0x55, 0xAA, 0x41, 0x09, 0x28, 0x3C, 0x00, 0x00, 0x06, 0xff, 0x0A]);
     /// ```
-    pub fn read_core_reg(core_id: u8, reg: impl CoreRegister, dest: Destination) -> [u8; 11] {
-        let ctrl = CoreRegisterControl::default().read(core_id, reg);
-        Self::write_reg(ctrl, dest)
+    pub const fn read_core_reg<T: CoreRegister>(
+        core_id: u8,
+        reg: &T,
+        dest: Destination,
+    ) -> [u8; 11] {
+        let ctrl = CoreRegisterControl::DEFAULT.read(core_id, reg);
+        Self::write_reg(&ctrl, dest)
     }
 
     /// # Write Core Register Command
@@ -195,12 +203,16 @@ impl Command {
     /// use bm1397_protocol::core_register::HashClockCtrl;
     ///
     /// // Write HashClockCtrl value 0x0001 on core 0 of chip with ChipAddress@40
-    /// let cmd = Command::write_core_reg(0, HashClockCtrl::from(0x0001), Destination::Chip(40));
+    /// let cmd = Command::write_core_reg(0, &HashClockCtrl::from(0x0001), Destination::Chip(40));
     /// assert_eq!(cmd, [0x55, 0xAA, 0x41, 0x09, 0x28, 0x3C, 0x80, 0x00, 0x85, 0x01, 0x13]);
     /// ```
-    pub fn write_core_reg(core_id: u8, reg: impl CoreRegister, dest: Destination) -> [u8; 11] {
-        let ctrl = CoreRegisterControl::default().write(core_id, reg);
-        Self::write_reg(ctrl, dest)
+    pub const fn write_core_reg<T: CoreRegister>(
+        core_id: u8,
+        reg: &T,
+        dest: Destination,
+    ) -> [u8; 11] {
+        let ctrl = CoreRegisterControl::DEFAULT.write(core_id, reg);
+        Self::write_reg(&ctrl, dest)
     }
 
     /// # Job with 1 Midstate Command
