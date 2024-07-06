@@ -11,8 +11,16 @@ repository = "https://github.com/GPTechinno/bm1397-protocol"
 
 [dependencies]
 crc = "3.2.1"
-defmt = { version = "0.3.4", optional = true }
+defmt = { version = "0.3.8", optional = true }
 fugit = "0.3.7"
+
+[dev-dependencies]
+serialport = { version="4.4.0", default-features = false}
 
 [features]
 defmt = ["dep:defmt", "fugit/defmt"]
+
+[[example]]
+name = "serial"
+path = "examples/serial.rs"
+dev-dependencies = ["serialport"]
