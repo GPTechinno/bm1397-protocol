@@ -667,6 +667,21 @@ impl TicketMask {
     pub const TM1_MASK: u32 = 0xff << Self::TM1_OFFSET;
     /// ## Bit mask for the `TM0` field.
     pub const TM0_MASK: u32 = 0xff << Self::TM0_OFFSET;
+
+    /// ## Create a new `TicketMask` from a difficulty.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::register::{Register, TicketMask};
+    ///
+    /// assert_eq!(TicketMask::from_difficulty(256).val(), 0x0000_00ff);
+    /// assert_eq!(TicketMask::from_difficulty(512).val(), 0x0000_80ff);
+    /// ```
+    pub fn from_difficulty(diff: u32) -> Self {
+        let largest_power_of_two = (1u32 << (31 - diff.leading_zeros())) - 1u32;
+        Self(largest_power_of_two.to_le().reverse_bits().to_be())
+    }
 }
 
 impl ::core::fmt::Display for TicketMask {

@@ -1,9 +1,14 @@
 //! BM1397 Commands.
 
+use fugit::HertzU32;
+
 use crate::crc::{crc16, crc5};
 
 use crate::core_register::CoreRegister;
-use crate::register::{CoreRegisterControl, Register};
+use crate::register::{
+    CoreRegisterControl, FastUARTConfiguration, MiscControl, PLL3Parameter, Register, TicketMask,
+};
+use crate::specifier::BaudrateClockSelect;
 
 /// Some command can be send to All chip in the chain or to a specific one
 pub enum Destination {
@@ -201,6 +206,72 @@ impl Command {
     pub fn write_core_reg(core_id: u8, reg: impl CoreRegister, dest: Destination) -> [u8; 11] {
         let ctrl = CoreRegisterControl::default().write(core_id, reg);
         Self::write_reg(ctrl, dest)
+    }
+
+    /// Set the difficulty.
+    ///
+    /// Returns a command to set the difficulty.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use bm1397_protocol::command::{Command, Destination};
+    ///
+    /// let cmd = Command::set_difficulty(256, Destination::All);
+    /// assert_eq!(cmd, [0x55,0xaa,0x51,0x09,0x00,0x14,0x00,0x00,0x00,0xff,0x08]);
+    /// ```
+    pub fn set_difficulty(diff: u32, dest: Destination) -> [u8; 11] {
+        Command::write_reg(TicketMask::from_difficulty(diff), dest)
+    }
+
+    /// Set the baudrate.
+    ///
+    /// Returns a list of commands to set the baudrate.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use bm1397_protocol::command::Command;
+    /// use fugit::HertzU32;
+    ///
+    /// let cmds = Command::set_baudrate(115_740, HertzU32::MHz(25));
+    /// assert_eq!(cmds, [[0x55,0xaa,0x51,0x09,0x00,0x18,0x00,0x00,0x3a,0x01,24],[0x55,0xaa,0x51,0x09,0x00,0x68,0x00,0x70,0x01,0x11,21],[0x55,0xaa,0x51,0x09,0x00,0x28,0x06,0x00,0x00,0x0f,24]]);
+    /// let cmds = Command::set_baudrate(6_250_000, HertzU32::MHz(25));
+    /// assert_eq!(cmds, [[0x55,0xaa,0x51,0x09,0x00,0x68,0xc0,0x70,0x01,0x11,0],[0x55,0xaa,0x51,0x09,0x00,0x28,0x06,0x00,0x00,0x0f,24],[0x55,0xaa,0x51,0x09,0x00,0x18,0x00,0x01,0x27,0x01,11]]);
+    /// ```
+    pub fn set_baudrate(baudrate: u32, clki_freq: HertzU32) -> [[u8; 11]; 3] {
+        if baudrate <= 3_125_000 {
+            let fbase = clki_freq.raw();
+            let bt8d = (fbase / (8 * baudrate)) - 1;
+            [
+                Command::write_reg(
+                    MiscControl::default()
+                        .set_bclk_sel(BaudrateClockSelect::Clki)
+                        .set_bt8d(bt8d as u16),
+                    Destination::All,
+                ),
+                Command::write_reg(PLL3Parameter::default(), Destination::All),
+                Command::write_reg(FastUARTConfiguration::default(), Destination::All),
+            ]
+        } else {
+            let pll3_param = PLL3Parameter::default().enable().lock().set_fbdiv(112);
+            let pll3_div4 = 6u8;
+            let fbase = pll3_param.frequency(clki_freq).raw() / (pll3_div4 as u32 + 1);
+            let bt8d = (fbase / (8 * baudrate)) - 1;
+            [
+                Command::write_reg(pll3_param, Destination::All),
+                Command::write_reg(
+                    FastUARTConfiguration::default().set_pll3_div4(pll3_div4),
+                    Destination::All,
+                ),
+                Command::write_reg(
+                    MiscControl::default()
+                        .set_bclk_sel(BaudrateClockSelect::Pll3)
+                        .set_bt8d(bt8d as u16),
+                    Destination::All,
+                ),
+            ]
+        }
     }
 
     /// # Job with 1 Midstate Command
