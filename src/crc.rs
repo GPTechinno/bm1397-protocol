@@ -1,6 +1,6 @@
 use crc::{Algorithm, Crc};
 
-pub const CRC5: Crc<u8> = Crc::<u8>::new(&Algorithm {
+const CRC5: Crc<u8> = Crc::<u8>::new(&Algorithm {
     width: 5,
     poly: 0x05,
     init: 0x1f,
@@ -11,7 +11,7 @@ pub const CRC5: Crc<u8> = Crc::<u8>::new(&Algorithm {
     residue: 0x00,
 });
 
-pub const CRC16: Crc<u16> = Crc::<u16>::new(&Algorithm {
+const CRC16: Crc<u16> = Crc::<u16>::new(&Algorithm {
     width: 16,
     poly: 0x1021,
     init: 0xffff,
