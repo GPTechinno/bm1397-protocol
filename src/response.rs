@@ -3,7 +3,6 @@
 use crate::crc::crc5;
 use crate::register::*;
 use crate::Error;
-use byteorder::{BigEndian, ByteOrder};
 
 #[derive(Debug)]
 pub struct RegisterResponse {
@@ -100,14 +99,14 @@ impl Response {
         if crc5(&data[2..9]) != 0x00 {
             return Err(Error::InvalidCrc);
         }
+        let reg_val = u32::from_be_bytes(data[2..6].try_into().unwrap());
         if data[8] & 0x80 == 0x80 {
             return Ok(ResponseType::Job(JobResponse {
-                nonce: BigEndian::read_u32(&data[2..]),
+                nonce: reg_val,
                 midstate_id: data[6],
                 job_id: data[7],
             }));
         }
-        let reg_val = BigEndian::read_u32(&data[2..]);
         Ok(ResponseType::Reg(RegisterResponse {
             chip_addr: data[6],
             register: match data[7] {
