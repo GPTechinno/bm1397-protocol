@@ -26,7 +26,7 @@ pub mod specifier;
 //     TimeOut, UARTRelay,
 // };
 // pub use response::{JobResponse, RegisterResponse, Response, ResponseType};
-// pub use specifier::{BaudrateClockSelect, ClockSelect};
+// pub use specifier::{BaudrateClockSelect, ClockSelect, ProcessMonitorSelect};
 
 #[derive(Debug, PartialEq)]
 pub enum Error {

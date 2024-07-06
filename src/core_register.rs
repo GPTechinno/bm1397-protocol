@@ -404,18 +404,36 @@ impl ProcessMonitorData {
 
     /// ## Bit mask for the `DATA` field.
     pub const DATA_MASK: u8 = 0xff << Self::DATA_OFFSET;
+
+    /// ## Get the Data.
+    ///
+    /// This returns an `u8` with the Data.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::core_register::ProcessMonitorData;
+    ///
+    /// let pmd: ProcessMonitorData = ProcessMonitorData::DEFAULT;
+    /// assert_eq!(pmd.data(), 0x00);
+    /// ```
+    pub fn data(&self) -> u8 {
+        (self.0 & Self::DATA_MASK) >> Self::DATA_OFFSET
+    }
 }
 
 impl ::core::fmt::Display for ProcessMonitorData {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        f.debug_struct("ProcessMonitorData").finish()
+        f.debug_struct("ProcessMonitorData")
+            .field("data", &self.data())
+            .finish()
     }
 }
 
 #[cfg(feature = "defmt")]
 impl defmt::Format for ProcessMonitorData {
     fn format(&self, fmt: defmt::Formatter) {
-        defmt::write!(fmt, "ProcessMonitorData {{ }}",);
+        defmt::write!(fmt, "ProcessMonitorData {{ data: {} }}", self.data());
     }
 }
 
@@ -461,18 +479,58 @@ impl CoreError {
     pub const INI_NONCE_ERR_MASK: u8 = 0b1 << Self::INI_NONCE_ERR_OFFSET;
     /// ## Bit mask for the `CMD_ERR_CNT` field.
     pub const CMD_ERR_CNT_MASK: u8 = 0b1111 << Self::CMD_ERR_CNT_OFFSET;
+
+    /// ## Get the Ini Nonce Error state.
+    ///
+    /// This returns an `bool` with the Ini Nonce Error state.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::core_register::CoreError;
+    ///
+    /// let ce: CoreError = CoreError::DEFAULT;
+    /// assert!(!ce.ini_nonce_err());
+    /// ```
+    pub const fn ini_nonce_err(&self) -> bool {
+        self.0 & Self::INI_NONCE_ERR_MASK == Self::INI_NONCE_ERR_MASK
+    }
+
+    /// ## Get the Command Error Count.
+    ///
+    /// This returns an `u8` with the Command Error Count.
+    ///
+    /// ### Example
+    ///
+    /// ```
+    /// use bm1397_protocol::core_register::CoreError;
+    ///
+    /// let ce: CoreError = CoreError::DEFAULT;
+    /// assert_eq!(ce.cmd_err_cnt(), 0x00);
+    /// ```
+    pub fn cmd_err_cnt(&self) -> u8 {
+        (self.0 & Self::CMD_ERR_CNT_MASK) >> Self::CMD_ERR_CNT_OFFSET
+    }
 }
 
 impl ::core::fmt::Display for CoreError {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-        f.debug_struct("CoreError").finish()
+        f.debug_struct("CoreError")
+            .field("ini_nonce_err", &self.ini_nonce_err())
+            .field("cmd_err_cnt", &self.cmd_err_cnt())
+            .finish()
     }
 }
 
 #[cfg(feature = "defmt")]
 impl defmt::Format for CoreError {
     fn format(&self, fmt: defmt::Formatter) {
-        defmt::write!(fmt, "CoreError {{ }}",);
+        defmt::write!(
+            fmt,
+            "CoreError {{ ini_nonce_err: {}, cmd_err_cnt: {} }}",
+            self.ini_nonce_err(),
+            self.cmd_err_cnt()
+        );
     }
 }
 
