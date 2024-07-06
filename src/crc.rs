@@ -1,18 +1,33 @@
-use crc_any::{CRCu16, CRCu8};
+use crc::{Algorithm, Crc};
 
-pub fn crc5(bytes: &[u8]) -> u8 {
-    // Poly (0x05), bits (5), initial (0x1f), final_xor (0x00), reflect (false).
-    let mut crc = CRCu8::create_crc(0x05, 5, 0x1f, 0x00, false);
-    crc.digest(bytes);
-    crc.get_crc()
+const CRC5: Crc<u8> = Crc::<u8>::new(&Algorithm {
+    width: 5,
+    poly: 0x05,
+    init: 0x1f,
+    refin: false,
+    refout: false,
+    xorout: 0x00,
+    check: 0x00,
+    residue: 0x00,
+});
+
+const CRC16: Crc<u16> = Crc::<u16>::new(&Algorithm {
+    width: 16,
+    poly: 0x1021,
+    init: 0xffff,
+    refin: false,
+    refout: false,
+    xorout: 0x0000,
+    check: 0x29b1,
+    residue: 0x0000,
+});
+
+pub const fn crc5(bytes: &[u8]) -> u8 {
+    CRC5.checksum(bytes)
 }
 
-pub fn crc16(bytes: &[u8]) -> u16 {
-    // CCITT_FALSE : Poly (0x1021), bits (16), initial (0xffff), final_xor (0x0000), reflect (false).
-    // let mut crc = CRCu16::create_crc(0x1021, 16, 0xffff, 0x0000, false);
-    let mut crc = CRCu16::crc16ccitt_false();
-    crc.digest(bytes);
-    crc.get_crc()
+pub const fn crc16(bytes: &[u8]) -> u16 {
+    CRC16.checksum(bytes)
 }
 
 #[cfg(test)]

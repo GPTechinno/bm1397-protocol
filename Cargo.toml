@@ -11,7 +11,7 @@ repository = "https://github.com/GPTechinno/bm1397-protocol"
 
 [dependencies]
 byteorder = { version ="1.4.3", default-features = false }
-crc-any = { version = "2.4.3", default-features = false }
+crc = "3.2.1"
 defmt = { version = "0.3.4", optional = true }
 fugit = "0.3.7"
 
