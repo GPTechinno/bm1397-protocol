@@ -189,4 +189,45 @@ impl Response {
             },
         }))
     }
+
+    /// Extract the Core ID from a Nonce value.
+    ///
+    /// BM1397 hardcode the 8 most significant bits of the Nonce value per Core.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bm1397_protocol::response::Response;
+    ///
+    /// assert_eq!(Response::nonce2core_id(0x12345678), 0x12);
+    /// ```
+    pub fn nonce2core_id(nonce: u32) -> usize {
+        (nonce >> 24) as usize
+    }
+
+    /// Extract the Chip Address from a Nonce value.
+    ///
+    /// BM1397 hardcode Nonce[23:16] with the chip_addr to start hashing with an offset,
+    /// and so split the NonceSpace evenly between all the chips in a chain.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bm1397_protocol::response::Response;
+    ///
+    /// assert_eq!(Response::nonce2chip_addr(0x12345678, 256), 0);
+    /// assert_eq!(Response::nonce2chip_addr(0x12335678, 2), 50);
+    /// assert_eq!(Response::nonce2chip_addr(0x12345678, 2), 52);
+    /// assert_eq!(Response::nonce2chip_addr(0x12355678, 2), 52);
+    /// assert_eq!(Response::nonce2chip_addr(0x12365678, 2), 54);
+    /// assert_eq!(Response::nonce2chip_addr(0x12325678, 3), 48);
+    /// assert_eq!(Response::nonce2chip_addr(0x12335678, 3), 51);
+    /// assert_eq!(Response::nonce2chip_addr(0x12345678, 3), 51);
+    /// assert_eq!(Response::nonce2chip_addr(0x12355678, 3), 51);
+    /// assert_eq!(Response::nonce2chip_addr(0x12365678, 3), 54);
+    /// ```
+    pub fn nonce2chip_addr(nonce: u32, chip_interval: usize) -> u8 {
+        let bits = ((nonce >> 16) & 0xFF) as usize;
+        (bits - bits % chip_interval) as u8
+    }
 }
